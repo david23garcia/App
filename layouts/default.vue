@@ -1,5 +1,5 @@
 <template>
-  <v-app dark>
+  <v-app>
     <v-navigation-drawer
       v-model="drawer"
       :mini-variant="miniVariant"
@@ -8,20 +8,60 @@
       app
     >
       <v-list>
+        <v-subheader inset>COMERCIOS</v-subheader>
+        <v-divider></v-divider>
+          <v-list-item
+            v-for="(item, i) in items"
+            :key="i"
+            :to="item.to"
+            router
+            exact
+          >
+            <v-list-item-action>
+              <v-icon>{{ item.icon }}</v-icon>
+            </v-list-item-action>
+            <v-list-item-content>
+              <v-list-item-title v-text="item.title" />
+            </v-list-item-content>
+          </v-list-item>
+        <v-divider></v-divider>
         <v-list-item
-          v-for="(item, i) in items"
-          :key="i"
-          :to="item.to"
+          :to="index"
           router
           exact
         >
           <v-list-item-action>
-            <v-icon>{{ item.icon }}</v-icon>
+            <v-icon>mdi-account</v-icon>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title v-text="item.title" />
+            <v-list-item-title v-text="userTittle" />
           </v-list-item-content>
         </v-list-item>
+        <v-list-item
+          :to="index"
+          router
+          exact
+        >
+          <v-list-item-action>
+            <v-icon>mdi-help-circle</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title v-text="helpTittle" />
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item
+          :to="index"
+          router
+          exact
+        >
+          <v-list-item-action>
+            <v-icon>mdi-exit-to-app</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title v-text="exitTittle" />
+          </v-list-item-content>
+        </v-list-item>
+        <v-divider></v-divider>
       </v-list>
     </v-navigation-drawer>
     <v-app-bar
@@ -30,32 +70,51 @@
       app
     >
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <v-btn
-        icon
-        @click.stop="miniVariant = !miniVariant"
-      >
-        <v-icon>mdi-{{ `chevron-${miniVariant ? 'right' : 'left'}` }}</v-icon>
-      </v-btn>
-      <v-btn
-        icon
-        @click.stop="clipped = !clipped"
-      >
-        <v-icon>mdi-application</v-icon>
-      </v-btn>
-      <v-btn
-        icon
-        @click.stop="fixed = !fixed"
-      >
-        <v-icon>mdi-minus</v-icon>
-      </v-btn>
+      <v-btn icon :to="index"><v-icon>mdi-home</v-icon></v-btn>
       <v-toolbar-title v-text="title" />
       <v-spacer />
-      <v-btn
-        icon
-        @click.stop="rightDrawer = !rightDrawer"
+      <v-menu
+        v-model="menu"
+        :close-on-content-click="false"
+        :nudge-width="200"
+        left
       >
-        <v-icon>mdi-menu</v-icon>
-      </v-btn>
+        <template v-slot:activator="{ on }">
+          <v-btn
+            icon
+            v-on="on"
+          >
+            <v-icon>mdi-account</v-icon>
+          </v-btn>
+        </template>
+        <v-card>
+          <v-list>
+            <v-list-item
+              v-for="(item, i) in itemsUser"
+              :key="i"
+              @click="v-on"
+            >
+              <v-list-item-title>{{ item.title }}</v-list-item-title>
+            </v-list-item>
+          </v-list>
+        </v-card>
+      </v-menu>
+      <v-menu
+        v-model="menu"
+        :close-on-content-click="false"
+        :nudge-width="500"
+        right>
+        <template v-slot:activator="{ on }">
+          <v-btn
+            icon
+            dark
+            v-on="on"
+          >
+            <v-icon>mdi-cart</v-icon>
+          </v-btn>
+        </template>
+          <basket />
+      </v-menu>
     </v-app-bar>
     <v-content>
       <v-container>
@@ -68,16 +127,6 @@
       temporary
       fixed
     >
-      <v-list>
-        <v-list-item @click.native="right = !right">
-          <v-list-item-action>
-            <v-icon light>
-              mdi-repeat
-            </v-icon>
-          </v-list-item-action>
-          <v-list-item-title>Switch drawer (click me)</v-list-item-title>
-        </v-list-item>
-      </v-list>
     </v-navigation-drawer>
     <v-footer
       :fixed="fixed"
@@ -89,7 +138,9 @@
 </template>
 
 <script>
+import basket from '../components/basket'
 export default {
+  components: { basket },
   data () {
     return {
       clipped: false,
@@ -97,20 +148,52 @@ export default {
       fixed: false,
       items: [
         {
-          icon: 'mdi-apps',
-          title: 'Welcome',
-          to: '/'
+          icon: 'mdi-store',
+          title: 'Comercio A',
+          to: '/inspire'
         },
         {
-          icon: 'mdi-chart-bubble',
-          title: 'Inspire',
+          icon: 'mdi-store',
+          title: 'Comercio B',
           to: '/inspire'
+        },
+        {
+          icon: 'mdi-store',
+          title: 'Comercio B',
+          to: '/inspire'
+        },
+        {
+          icon: 'mdi-store',
+          title: 'Comercio C',
+          to: '/inspire'
+        },
+        {
+          icon: 'mdi-store',
+          title: 'Comercio D',
+          to: '/inspire'
+        }
+      ],
+      itemsUser: [
+        {
+          title: 'Iniciar Sesion'
+        },
+        {
+          title: 'Pedidos'
+        },
+        {
+          title: 'Perfil'
+        },
+        {
+          title: 'Registrarse'
         }
       ],
       miniVariant: false,
       right: true,
       rightDrawer: false,
-      title: 'Vuetify.js'
+      title: 'Comercio Local',
+      userTittle: 'Cuenta',
+      helpTittle: 'Ayuda',
+      exitTittle: 'Salir'
     }
   }
 }

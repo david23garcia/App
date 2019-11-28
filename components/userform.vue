@@ -39,13 +39,6 @@
       @blur="$v.email.$touch()"
     ></v-text-field>
     <v-text-field
-      v-model="emailRT"
-      :error-messages="emailRTErrors"
-      label="Repetir Email"
-      @input="$v.emailRT.$touch()"
-      @blur="$v.emailRT.$touch()"
-    ></v-text-field>
-    <v-text-field
       v-model="password"
       :error-messages="passwordErrors"
       label="Contraseña"
@@ -53,31 +46,23 @@
       @blur="$v.password.$touch()"
       type="password"
     ></v-text-field>
-<!--    <v-text-field-->
-<!--      v-model="passwordRT"-->
-<!--      :error-messages="passwordRTErrors"-->
-<!--      label="Repetir Contraseña"-->
-<!--      @input="$v.passwordRT.$touch()"-->
-<!--      @blur="$v.passwordRT.$touch()"-->
-<!--      type="password"-->
-<!--    ></v-text-field>-->
     <v-btn class="mr-4" @click="submit">Registrarse</v-btn>
-    <v-btn @click="clear">Cancelar</v-btn>
+    <v-btn @click="clear" to="/">Cancelar</v-btn>
   </form>
 </template>
 
 <script>
 import { validationMixin } from 'vuelidate'
-import { required, maxLength, email } from 'vuelidate/lib/validators'
+import { required, maxLength } from 'vuelidate/lib/validators'
 import minLength from 'vuelidate/src/validators/minLength'
+import { Collection, registerUser, Rol } from '../services/api'
 
 export default {
   mixins: [validationMixin],
   name: 'userform',
   validations: {
     name: { required, maxLength: maxLength(10) },
-    email: { required, email },
-    emailRT: { email },
+    email: { required },
     surname1: { required, maxLength: maxLength(10) },
     surname2: { maxLength: maxLength(10) },
     phone: { required, maxLength: maxLength(9) },
@@ -89,10 +74,8 @@ export default {
     surname1: '',
     surname2: '',
     email: '',
-    emailRT: '',
     phone: '',
     password: ''
-    // passwordRT: ''
   }),
 
   computed: {
@@ -123,12 +106,6 @@ export default {
       !this.$v.email.required && errors.push('E-mail is required')
       return errors
     },
-    emailRTErrors () {
-      const errors = []
-      if (!this.$v.emailRT.$dirty) { return errors }
-      this.$v.email !== this.$v.emailRT && errors.push('Mail dont equals')
-      return errors
-    },
     phoneErrors () {
       const errors = []
       if (!this.$v.phone.$dirty) { return errors }
@@ -143,25 +120,21 @@ export default {
       !this.$v.password.required && errors.push('surname is required.')
       return errors
     }
-    // passwordRTErrors () {
-    //   const errors = []
-    //   if (!this.$v.passwordRT.$dirty) { return errors }
-    //   this.$v.password !== this.$v.passwordRT && errors.push('surname must be at most 10 characters long')
-    //   return errors
-    // }
   },
 
   methods: {
     submit () {
-      this.$v.$touch()
-    },
-    clear () {
-      this.$v.$reset()
-      this.name = ''
-      this.surname1 = ''
-      this.surname2 = ''
-      this.email = ''
-      this.phone = ''
+      let user = {}
+      user = Object.assign(user, {
+        name: this.name,
+        surname1: this.surname1,
+        surname2: this.surname2,
+        email: this.email,
+        phone: this.phone,
+        password: this.password,
+        role: Rol.User
+      })
+      registerUser(Collection.User, user)
     }
   }
 }

@@ -118,8 +118,8 @@
       </v-col>
     </v-row>
 
-    <v-btn class="mr-4" @click="submit">Registrarse</v-btn>
-    <v-btn @click="clear">Cancelar</v-btn>
+    <v-btn class="mr-4" @click="submit" to="/">Registrarse</v-btn>
+    <v-btn to="/">Cancelar</v-btn>
   </form>
 </template>
 
@@ -127,6 +127,8 @@
 import { validationMixin } from 'vuelidate'
 import { required, maxLength, email } from 'vuelidate/lib/validators'
 import minLength from 'vuelidate/src/validators/minLength'
+import { mapActions } from 'vuex'
+import { Collection } from '../services/api'
 
 export default {
   mixins: [validationMixin],
@@ -134,9 +136,6 @@ export default {
   validations: {
     name: { required, maxLength: maxLength(10) },
     email: { required, email },
-    emailRT: { email },
-    surname1: { required, maxLength: maxLength(10) },
-    surname2: { maxLength: maxLength(10) },
     phone: { required, maxLength: maxLength(9) },
     password: { required, minLength: minLength(8) },
     description: { required },
@@ -153,8 +152,6 @@ export default {
   },
   data: () => ({
     name: '',
-    surname1: '',
-    surname2: '',
     email: '',
     phone: '',
     description: '',
@@ -177,30 +174,11 @@ export default {
       !this.$v.name.required && errors.push('Name is required.')
       return errors
     },
-    surname1Errors () {
-      const errors = []
-      if (!this.$v.surname1.$dirty) { return errors }
-      !this.$v.surname1.maxLength && errors.push('surname must be at most 10 characters long')
-      !this.$v.surname1.required && errors.push('surname is required.')
-      return errors
-    },
-    surname2Errors () {
-      const errors = []
-      if (!this.$v.surname2.$dirty) { return errors }
-      !this.$v.surname2.maxLength && errors.push('surname must be at most 10 characters long')
-      return errors
-    },
     emailErrors () {
       const errors = []
       if (!this.$v.email.$dirty) { return errors }
-      !this.$v.email.maxLength && errors.push('Must be valid e-mail')
+      // !this.$v.email.maxLength && errors.push('Must be valid e-mail')
       !this.$v.email.required && errors.push('E-mail is required')
-      return errors
-    },
-    emailRTErrors () {
-      const errors = []
-      if (!this.$v.emailRT.$dirty) { return errors }
-      this.$v.email !== this.$v.emailRT && errors.push('Mail dont equals')
       return errors
     },
     phoneErrors () {
@@ -282,16 +260,27 @@ export default {
   },
 
   methods: {
+    ...mapActions(['updateModel']),
     submit () {
-      this.$v.$touch()
-    },
-    clear () {
-      this.$v.$reset()
-      this.name = ''
-      this.surname1 = ''
-      this.surname2 = ''
-      this.email = ''
-      this.phone = ''
+      let shop = {}
+      shop = Object.assign(shop, {
+        name: this.name,
+        email: this.email,
+        phone: this.phone,
+        description: this.description,
+        address: {
+          type: this.type,
+          street: this.street,
+          number: this.number,
+          floor: this.floor,
+          letter: this.letter,
+          city: this.city,
+          province: this.province,
+          state: this.state,
+          cv: this.cv
+        }
+      })
+      this.updateModel(Collection.Shop, shop)
     }
   }
 }

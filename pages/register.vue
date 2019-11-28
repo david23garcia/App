@@ -1,14 +1,16 @@
 <template>
-  <v-row>
-    <v-col cols="6">
-      Registrar Usuario
-      <userform />
-    </v-col>
-    <v-col cols="6">
-      Registrar Comercio
-      <shopform />
-    </v-col>
-  </v-row>
+  <v-container align="center" col="8">
+    <v-radio-group v-model="type" row>
+      <v-radio label="Registrar Usuario" value="user"></v-radio>
+      <v-radio label="Registrar Comercio" value="shop"></v-radio>
+    </v-radio-group>
+    <v-flex v-if="type == 'user'" col="6">
+       <userform />
+    </v-flex>
+    <v-flex v-else col="6">
+       <shopform />
+    </v-flex>
+  </v-container>
 </template>
 
 <script>
@@ -18,7 +20,10 @@ export default {
   components: {
     userform,
     shopform
-  }
+  },
+  data: () => ({
+    type: 'user'
+  })
 }
 </script>
 

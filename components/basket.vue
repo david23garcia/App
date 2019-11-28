@@ -16,7 +16,7 @@
               {{ item.name }}
             </v-col>
             <v-col>
-              methods.calculatePartialPrice({{ item.price }}, {{ item.quantity }})
+              {{ calculatePartialPrice( item.price, item.quantity ) }}
             </v-col>
           </v-row>
         </v-list-item-content>
@@ -33,8 +33,6 @@
       </v-col>
     </v-row>
   </v-card>
-
-<!--  al final del carrito un boton de pagar y un precio final sumando todos los precios de cada item-->
 </template>
 
 <script>

@@ -26,7 +26,7 @@
           </v-list-item>
         <v-divider></v-divider>
         <v-list-item
-          :to="index"
+          to="/"
           router
           exact
         >
@@ -38,7 +38,7 @@
           </v-list-item-content>
         </v-list-item>
         <v-list-item
-          :to="index"
+          to="/"
           router
           exact
         >
@@ -50,7 +50,7 @@
           </v-list-item-content>
         </v-list-item>
         <v-list-item
-          :to="index"
+          to="/"
           router
           exact
         >
@@ -70,7 +70,7 @@
       app
     >
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <v-btn icon :to="index"><v-icon>mdi-home</v-icon></v-btn>
+      <v-btn icon to="/"><v-icon>mdi-home</v-icon></v-btn>
       <v-toolbar-title v-text="title" />
       <v-spacer />
       <v-menu
@@ -93,6 +93,7 @@
               v-for="(item, i) in itemsUser"
               :key="i"
               @click="v-on"
+              :to="item.to"
             >
               <v-list-item-title>{{ item.title }}</v-list-item-title>
             </v-list-item>
@@ -107,7 +108,6 @@
         <template v-slot:activator="{ on }">
           <v-btn
             icon
-            dark
             v-on="on"
           >
             <v-icon>mdi-cart</v-icon>
@@ -175,7 +175,8 @@ export default {
       ],
       itemsUser: [
         {
-          title: 'Iniciar Sesion'
+          title: 'Iniciar Sesion',
+          to: '/login'
         },
         {
           title: 'Pedidos'

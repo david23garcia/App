@@ -32,16 +32,13 @@
               <v-card-text>
                 <v-form>
                   <v-text-field
-                    label="Login"
-                    name="login"
+                    v-model="email"
+                    label="Email"
                     prepend-icon="mdi-account"
-                    type="text"
                   ></v-text-field>
-
                   <v-text-field
-                    id="password"
-                    label="Password"
-                    name="password"
+                    v-model="password"
+                    label="Contraseña"
                     prepend-icon="mdi-lock"
                     type="password"
                   ></v-text-field>
@@ -49,7 +46,7 @@
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
-                <v-btn color="primary">Login</v-btn>
+                <v-btn color="primary" @click="submit">Login</v-btn>
               </v-card-actions>
             </v-card>
           </v-col>
@@ -60,7 +57,18 @@
 </template>
 
 <script>
+import { loginFirebase } from '../services/api'
 export default {
+  data: () => ({
+    email: '',
+    password: ''
+  }),
+
+  methods: {
+    submit () {
+      loginFirebase(this.email, this.password)
+    }
+  }
 }
 </script>
 

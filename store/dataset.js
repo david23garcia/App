@@ -88,7 +88,7 @@ export const state = () => ({
 
 export const getters = {
   // getCol: (state, getters) => kind => state.data.col[kind],
-  getCol (kind) {
+  getCol: state => (kind) => {
     return state.data.col[kind]
   },
   getLang: state => state.defaultLang,
@@ -212,7 +212,7 @@ export const actions = {
     commit('removeDocListening', { kind, id })
   },
 
-  updateModel (collection, field) {
-    return addDocument(collection, field)
+  updateModel ({ state, dispatch, commit }, { collection, data }) {
+    return addDocument(collection, data)
   }
 }

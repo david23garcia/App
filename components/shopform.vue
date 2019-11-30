@@ -260,7 +260,7 @@ export default {
   },
 
   methods: {
-    ...mapActions(['updateModel']),
+    ...mapActions('dataset', ['updateModel']),
     submit () {
       let shop = {}
       shop = Object.assign(shop, {
@@ -280,7 +280,7 @@ export default {
           cv: this.cv
         }
       })
-      this.updateModel(Collection.Shop, shop)
+      this.updateModel({ collection: Collection.Shop, data: shop })
     }
   }
 }

@@ -117,7 +117,6 @@
         ></v-text-field>
       </v-col>
     </v-row>
-
     <v-btn class="mr-4" @click="submit" to="/">Registrarse</v-btn>
     <v-btn to="/">Cancelar</v-btn>
   </form>
@@ -186,6 +185,7 @@ export default {
       if (!this.$v.phone.$dirty) { return errors }
       !this.$v.phone.maxLength && errors.push('phone must be at most 9 characters long')
       !this.$v.phone.required && errors.push('phone is required.')
+      // !this.$v.phone.regularExpression && errors.push('deben ser numeros.')
       return errors
     },
     descriptionErrors () {
@@ -258,7 +258,6 @@ export default {
       return errors
     }
   },
-
   methods: {
     ...mapActions('dataset', ['updateModel']),
     submit () {
@@ -281,6 +280,7 @@ export default {
         }
       })
       this.updateModel({ collection: Collection.Shop, data: shop })
+      this.$emit('isForm', false)
     }
   }
 }

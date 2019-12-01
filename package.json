@@ -16,7 +16,8 @@
     "@mdi/js": "^4.5.95",
     "@nuxtjs/pwa": "^3.0.0-0",
     "firebase": "^7.4.0",
-    "nuxt": "^2.10.0"
+    "nuxt": "^2.10.0",
+    "vuex": "latest"
   },
   "devDependencies": {
     "@nuxtjs/eslint-config": "^1.1.2",

@@ -1,8 +1,8 @@
 <template>
-  <v-layout justify-center align-center>
+  <v-row justify="center" align="center">
     <search />
     <filters />
-  </v-layout>
+  </v-row>
 </template>
 
 <script>

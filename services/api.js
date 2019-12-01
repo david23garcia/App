@@ -136,14 +136,14 @@ export const addDocumentByUid = async function (kind, field, uid) {
   return db.collection(kind).doc(uid).set(field)
 }
 
-export const registerUser = async function (kind, field) {
+export const registerUser = async function (email, password) {
   const fb = await getAuth()
-  return fb.createUserWithEmailAndPassword(field.email, field.password)
+  return fb.createUserWithEmailAndPassword( email , password)
 }
 
 export const loginFirebase = async function (email, password) {
   const fb = await getAuth()
-  return fb.signInWithEmailAndPassword(email, password)
+  return fb.signInWithEmailAndPassword({ email }, { password })
 }
 
 // export const userSession() = async function (){

@@ -1,5 +1,5 @@
 <template>
-  <v-flex xs2>
+  <v-col cols="2">
     <v-menu
       v-model="menu"
       :close-on-content-click="false"
@@ -25,7 +25,7 @@
               <v-divider></v-divider>
             </v-card>
     </v-menu>
-  </v-flex>
+  </v-col>
 </template>
 
 <script>

@@ -11,17 +11,17 @@
         <v-subheader inset>COMERCIOS</v-subheader>
         <v-divider></v-divider>
           <v-list-item
-            v-for="(item, i) in items"
+            v-for="(item, i) in this.getListCol(shop)"
             :key="i"
-            :to="item.to"
+            :to="/shops/i.name"
             router
             exact
           >
             <v-list-item-action>
-              <v-icon>{{ item.icon }}</v-icon>
+              <v-icon>mdi-playstation</v-icon>
             </v-list-item-action>
             <v-list-item-content>
-              <v-list-item-title v-text="item.title" />
+              <v-list-item-title v-text="item.name" />
             </v-list-item-content>
           </v-list-item>
         <v-divider></v-divider>
@@ -138,7 +138,9 @@
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex'
 import basket from '../components/basket'
+import { Collection } from '../services/api'
 export default {
   components: { basket },
   data () {
@@ -146,56 +148,27 @@ export default {
       clipped: false,
       drawer: false,
       fixed: false,
-      items: [
-        {
-          icon: 'mdi-store',
-          title: 'Comercio A',
-          to: '/inspire'
-        },
-        {
-          icon: 'mdi-store',
-          title: 'Comercio B',
-          to: '/inspire'
-        },
-        {
-          icon: 'mdi-store',
-          title: 'Comercio B',
-          to: '/inspire'
-        },
-        {
-          icon: 'mdi-store',
-          title: 'Comercio C',
-          to: '/inspire'
-        },
-        {
-          icon: 'mdi-store',
-          title: 'Comercio D',
-          to: '/inspire'
-        }
-      ],
-      itemsUser: [
-        {
-          title: 'Iniciar Sesion',
-          to: '/login'
-        },
-        {
-          title: 'Pedidos'
-        },
-        {
-          title: 'Perfil'
-        },
-        {
-          title: 'Registrarse'
-        }
-      ],
       miniVariant: false,
       right: true,
       rightDrawer: false,
       title: 'Comercio Local',
       userTittle: 'Cuenta',
       helpTittle: 'Ayuda',
-      exitTittle: 'Salir'
+      exitTittle: 'Salir',
+      shop: Collection.Shop
     }
+  },
+  mounted() {
+    this.listenCol(this.shop)
+  },
+  destroyed() {
+    this.unlistenCol(this.shop)
+  },
+  computed: {
+    ...mapGetters('dataset', ['getTitle', 'getListCol', 'getListUser']),
+  },
+  methods: {
+    ...mapActions('dataset', ['listenCol', 'unlistenCol']),
   }
 }
 </script>

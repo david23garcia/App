@@ -23,8 +23,8 @@
                 <v-toolbar-title>Iniciar Sesión</v-toolbar-title>
                 <v-spacer></v-spacer>
                 <v-tooltip bottom>
-                  <template v-slot:activator="{ on }">
-                  </template>
+<!--                  <template v-slot:activator="{ on }">-->
+<!--                  </template>-->
                   <span>Source</span>
                   <span>Codepen</span>
                 </v-tooltip>

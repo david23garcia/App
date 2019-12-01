@@ -83,7 +83,26 @@ export const state = () => ({
       shippingMethod: {},
       articleOrder: {}
     }
-  }
+  },
+  title: 'ComercioLocal',
+  listUser: [
+    {
+      title: 'Iniciar Sesion',
+      to: '/login'
+    },
+    {
+      title: 'Pedidos',
+      to: '/admin'
+    },
+    {
+      title: 'Perfil',
+      to: '/admin'
+    },
+    {
+      title: 'Registrarse',
+      to: '/register'
+    }
+  ]
 })
 
 export const getters = {
@@ -114,6 +133,11 @@ export const getters = {
   },
   getRegion: (state, getters) => (id) => {
     return getters.getDoc({ kind: Collection.Region, id })
+  },
+  getListCol: state => kind => {
+    const data = state.data.col[kind]
+    const keys = Object.keys(data)
+    return keys.map(id => ({ id, ...data[id] }))
   }
 
 }

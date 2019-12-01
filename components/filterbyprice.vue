@@ -2,8 +2,8 @@
   <v-list-tile-content style="margin-bottom:0px">
     <v-list-tile-title>PRECIO</v-list-tile-title>
     <v-list-tile-action>
-      <v-layout>
-        <v-flex>
+      <v-row>
+        <v-col>
           <v-range-slider
             style="margin: 35px 20px 0px 20px"
             :max="500"
@@ -13,8 +13,8 @@
             hint="€"
             persistent-hint
           ></v-range-slider>
-        </v-flex>
-      </v-layout>
+        </v-col>
+      </v-row>
     </v-list-tile-action>
   </v-list-tile-content>
 </template>

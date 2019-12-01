@@ -46,8 +46,8 @@
       @blur="$v.password.$touch()"
       type="password"
     ></v-text-field>
-    <v-btn class="mr-4" @click="submit">Registrarse</v-btn>
-    <v-btn @click="clear" to="/">Cancelar</v-btn>
+    <v-btn class="mr-4" @click="submit" to="/">Registrarse</v-btn>
+    <v-btn to="/">Cancelar</v-btn>
   </form>
 </template>
 
@@ -55,6 +55,7 @@
 import { validationMixin } from 'vuelidate'
 import { required, maxLength } from 'vuelidate/lib/validators'
 import minLength from 'vuelidate/src/validators/minLength'
+import { mapActions } from 'vuex'
 import { Collection, registerUser, Rol } from '../services/api'
 
 export default {
@@ -109,8 +110,8 @@ export default {
     phoneErrors () {
       const errors = []
       if (!this.$v.phone.$dirty) { return errors }
-      !this.$v.phone.maxLength && errors.push('phone must be at most 9 characters long')
-      !this.$v.phone.required && errors.push('phone is required.')
+      // !this.$v.phone.maxLength && errors.push('phone must be at most 9 characters long')
+      // !this.$v.phone.required && errors.push('phone is required.')
       return errors
     },
     passwordErrors () {
@@ -121,8 +122,8 @@ export default {
       return errors
     }
   },
-
   methods: {
+    ...mapActions('dataset', ['updateModel']),
     submit () {
       let user = {}
       user = Object.assign(user, {
@@ -134,8 +135,9 @@ export default {
         password: this.password,
         role: Rol.User
       })
-      registerUser(Collection.User, user)
-    }
+      registerUser(this.email, this.password)
+      this.updateModel({ collection: Collection.User, data: user })
+    },
   }
 }
 </script>

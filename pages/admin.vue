@@ -1,29 +1,42 @@
 <template>
-  <v-container align="center" col="8">
-    <v-radio-group v-model="type" row>
-      <v-radio label="Usuarios" value="user"></v-radio>
-      <v-radio label="Comercios" value="shop"></v-radio>
-      <v-radio label="Articulos" value="article"></v-radio>
-    </v-radio-group>
-    <v-flex v-if="type == 'user'" col="6">
-      <listdefault :headers = "headersUser" :type="user" :title='userTitle'> </listdefault>
-    </v-flex>
-    <v-flex v-else-if="type == 'shop'" col="6">
-      <listdefault :headers = "headersShop" :type="shop" :title='shopTitle'> </listdefault>
-    </v-flex>
-    <v-flex v-else-if="type == 'article'" col="6">
-      <listdefault :headers = "headersArticles" :type="article" :title='articleTitle'> </listdefault>
-    </v-flex>
-  </v-container>
+  <v-card align="center" cols="10">
+    <v-card align="center" cols="5">
+      <v-radio-group v-model="type" row align="center">
+        <v-radio label="Usuarios" value="user"></v-radio>
+        <v-radio label="Comercios" value="shop"></v-radio>
+        <v-radio label="Articulos" value="article"></v-radio>
+      </v-radio-group>
+    </v-card>
+    <v-card>
+      <listdefault
+        v-if="type === 'user'"
+        :headers="headersUser"
+        :type="user"
+        :title="userTitle"
+      ></listdefault>
+      <listdefault
+        v-else-if="type === 'shop'"
+        :headers="headersShop"
+        :type="shop"
+        :title="shopTitle"
+      ></listdefault>
+      <listdefault
+        v-else-if="type === 'article'"
+        :headers="headersArticles"
+        :type="article"
+        :title="articleTitle"
+      ></listdefault>
+    </v-card>
+  </v-card>
 </template>
 
 <script>
 import Listdefault from '../components/listdefault'
 import { Collection } from '../services/api'
 export default {
-  name: 'admin',
+  name: 'Admin',
   components: { Listdefault },
-  data () {
+  data() {
     return {
       search: '',
       type: 'user',
@@ -62,6 +75,4 @@ export default {
 }
 </script>
 
-<style scoped>
-
-</style>
+<style scoped></style>

@@ -1,26 +1,9 @@
-- Cambiar colores
-- Lista de datos sacados de firebase
-- Referencias a otras paginas como funciona
-- Porque los botones no hacen nada ninguna ref ni nada :(
-- Hacer que el menu desplegable, baje el resto de elementos hacia abajo
-- Card para el item, como pasarle los datos y como meter varios juntos con datos modo item
-- Usar Funciones
+Cosas que Rematar:
+  - Usuarios
+      - Control de Roles -> posible seleccionador de roles y que se muestren para registrar una cosa u otra en funcion del usuario logado
+      - Control de Roles con Aut
+  - Reglas de los formularios
 
-PREGUNTAS:
-  - Conexión con firebase (obtener datos, guardar datos ...)
-  - Referencias a imagenes guardadas.
-  - Referencias a otras paginas.
-  - Comunicación entre componentes.
-  - Funciones js y como usarlas.
-  - Condiciones para mostrar unas cosas u otras (componentes).
-  - Estilo:
-      - Menu desplegable que baje el resto.
-      - Cambio estilo completo.
-      - Cambio color boton seleccionado.
-      - Cards estilo si selecciono una pestaña me muestra una cosa si selecciono otra muestro otra cosa.
-
-
-- NOTA: Falta toda la logica de la pagina, solo son vistas
 
 https://codesandbox.io/s/536mvppkq4
 https://materialdesignicons.com/

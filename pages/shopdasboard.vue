@@ -1,7 +1,7 @@
 <template>
-  <v-layout>
+  <v-row>
     <listdefault />
-  </v-layout>
+  </v-row>
 </template>
 
 <script>

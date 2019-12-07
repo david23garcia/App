@@ -25,8 +25,8 @@
             </v-list-item-content>
           </v-list-item>
         <v-divider></v-divider>
-        <v-list-item
-          to="/"
+        <v-list-item v-if="this.session()"
+          to="/user/id"
           router
           exact
         >
@@ -34,11 +34,11 @@
             <v-icon>mdi-account</v-icon>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title v-text="userTittle" />
+            <v-list-item-title v-text="profile" />
           </v-list-item-content>
         </v-list-item>
         <v-list-item
-          to="/"
+          to="/admin"
           router
           exact
         >
@@ -46,11 +46,11 @@
             <v-icon>mdi-help-circle</v-icon>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title v-text="helpTittle" />
+            <v-list-item-title v-text="help" />
           </v-list-item-content>
         </v-list-item>
-        <v-list-item
-          to="/"
+        <v-list-item v-if="this.session()"
+          @click="exit()"
           router
           exact
         >
@@ -58,7 +58,7 @@
             <v-icon>mdi-exit-to-app</v-icon>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title v-text="exitTittle" />
+            <v-list-item-title v-text="exit" />
           </v-list-item-content>
         </v-list-item>
         <v-divider></v-divider>
@@ -71,7 +71,7 @@
     >
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
       <v-btn icon to="/"><v-icon>mdi-home</v-icon></v-btn>
-      <v-toolbar-title v-text="title" />
+      <v-toolbar-title v-text="this.getTitle()" />
       <v-spacer />
       <v-menu
         v-model="menu"
@@ -90,7 +90,7 @@
         <v-card>
           <v-list>
             <v-list-item
-              v-for="(item, i) in itemsUser"
+              v-for="(item, i) in this.getListUser()"
               :key="i"
               @click="v-on"
               :to="item.to"
@@ -100,7 +100,7 @@
           </v-list>
         </v-card>
       </v-menu>
-      <v-menu
+      <v-menu v-if="this.session()"
         v-model="menu"
         :close-on-content-click="false"
         :nudge-width="500"
@@ -140,7 +140,8 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import basket from '../components/basket'
-import { Collection } from '../services/api'
+import { Collection, logout, userSession } from '../services/api'
+import { actions } from '../store/dataset'
 export default {
   components: { basket },
   data () {
@@ -151,24 +152,60 @@ export default {
       miniVariant: false,
       right: true,
       rightDrawer: false,
-      title: 'Comercio Local',
-      userTittle: 'Cuenta',
-      helpTittle: 'Ayuda',
-      exitTittle: 'Salir',
-      shop: Collection.Shop
+      profile: 'Cuenta',
+      help: 'Ayuda',
+      exit: 'Cerrar Sesión',
+      shop: Collection.Shop,
+      login: userSession()
     }
   },
-  mounted() {
-    this.listenCol(this.shop)
+  // mounted() {
+  //   this.listenCol(this.shop)
+  // },
+  // destroyed() {
+  //   this.unlistenCol(this.shop)
+  // },
+  beforeCreate () {
+    console.log('1 - beforeCreate')
   },
-  destroyed() {
+  created () {
+    console.log('2 - created')
+  },
+  beforeMount () {
+    console.log('3 - beforeMount')
+  },
+  mounted () {
+    this.listenCol(this.shop)
+    console.log('4 - mounted')
+  },
+  beforeUpdate () {
+    console.log('5 - beforeUpdate')
+  },
+  updated () {
+    console.log('6 - updated')
+  },
+  beforeDestroy () {
+    console.log('7 - beforeDestroy')
+  },
+  destroyed () {
     this.unlistenCol(this.shop)
+    console.log('8 - destroyed')
   },
   computed: {
-    ...mapGetters('dataset', ['getTitle', 'getListCol', 'getListUser']),
+    ...mapGetters('dataset', ['getTitle', 'getListCol', 'getListUser', 'getIsLogin', 'getTitle']),
   },
   methods: {
-    ...mapActions('dataset', ['listenCol', 'unlistenCol']),
+    ...mapActions('dataset', ['listenCol', 'unlistenCol', 'setIsLogin']),
+    session(){
+      return userSession()
+    }
+  },
+
+  exit(){
+    logout().then(function () {
+      actions.setIsLogin(false)
+      window.location.href = "/"
+    })
   }
 }
 </script>

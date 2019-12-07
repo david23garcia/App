@@ -22,8 +22,9 @@ export const ChangeType = {
 
 export const Rol = {
   Admin: 'admin',
-  Super: 'super',
-  User: 'user'
+  Superadmin: 'superadmin',
+  User: 'user',
+  Employee: 'employee'
 }
 
 export const Group = {
@@ -136,18 +137,45 @@ export const addDocumentByUid = async function (kind, field, uid) {
   return db.collection(kind).doc(uid).set(field)
 }
 
-export const registerUser = async function (email, password) {
+export const registerUser = async function (data) {
+  console.log('quiero registrar a un usuario')
   const fb = await getAuth()
-  return fb.createUserWithEmailAndPassword( email , password)
+  return fb.createUserWithEmailAndPassword( data.email , data.password).then(function (user) {
+    return createDocumentById(Collection.User, data, user.user.uid)
+  }).catch(function (error) {
+    console.log("ha ido ko el error")
+    console.log(error.message)
+  })
 }
 
-export const loginFirebase = async function (email, password) {
+export const login = async function ({ email, password }) {
   const fb = await getAuth()
-  return fb.signInWithEmailAndPassword({ email }, { password })
+  return fb.signInWithEmailAndPassword(email, password)
 }
 
-// export const userSession() = async function (){
-//   const fb = await getAuth()
-//
-//   return fb.currentUser
-// }
+export const getDoc = async function (collection, id) {
+  const db = await getDB()
+  return db.collection(collection).doc(id).get()
+}
+
+export const createDocumentById = async function (collection, data, id){
+  const db = await getDB()
+  db.collection(collection).doc(id).set(data)
+}
+
+export const userSession = async function (){
+  const fb = await getAuth()
+  fb.onAuthStateChanged(function (user) {
+    if(user) {
+      return true
+    } else {
+      return false
+    }
+  })
+
+}
+
+export const logout = async function () {
+  const fb = await getAuth()
+  return fb.signOut()
+}

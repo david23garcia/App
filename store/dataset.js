@@ -84,12 +84,8 @@ export const state = () => ({
       articleOrder: {}
     }
   },
-  title: 'ComercioLocal',
-  listUser: [
-    {
-      title: 'Iniciar Sesion',
-      to: '/login'
-    },
+  title: 'Comercio Local',
+  listUserLogin: [
     {
       title: 'Pedidos',
       to: '/admin'
@@ -97,12 +93,20 @@ export const state = () => ({
     {
       title: 'Perfil',
       to: '/admin'
+    }
+  ],
+  listUserLogout: [
+    {
+      title: 'Iniciar Sesion',
+      to: '/login'
     },
     {
       title: 'Registrarse',
       to: '/register'
     }
-  ]
+  ],
+  isLogin: false,
+  roleUser: null
 })
 
 export const getters = {
@@ -134,11 +138,36 @@ export const getters = {
   getRegion: (state, getters) => (id) => {
     return getters.getDoc({ kind: Collection.Region, id })
   },
+  getUser : (state, getters) => (id) => {
+    return getters.getDoc( {kind: Collection.User, id})
+  },
   getListCol: state => kind => {
     const data = state.data.col[kind]
     const keys = Object.keys(data)
     return keys.map(id => ({ id, ...data[id] }))
-  }
+  },
+  getDataDoc: state => (kind, idDoc) => {
+    const data = state.data.col[kind]
+    const keys = Object.keys(data)
+    const col = keys.map(id => ({ id, ...data[id] }))
+    return col.filter(id => id === idDoc)
+  },
+  getIsLogin: state => () =>{
+    return state.isLogin
+  },
+  getRoleUser: state => () => {
+    return state.roleUser
+  },
+  getListUser: state => () => {
+    if(state.isLogin) {
+      return state.listUserLogin
+    } else {
+      return state.listUserLogout
+    }
+  },
+  getTitle: state => () => {
+    return state.title
+}
 
 }
 
@@ -188,8 +217,7 @@ export const mutations = {
   clearDoc (state, { kind, id }) {
     const target = state.data.doc[kind]
     Vue.delete(target, id)
-  }
-
+  },
 }
 
 export const actions = {
@@ -238,5 +266,8 @@ export const actions = {
 
   updateModel ({ state, dispatch, commit }, { collection, data }) {
     return addDocument(collection, data)
+  },
+  setIsLogin({ state, dispatch, commit }, login){
+    state.isLogin = login
   }
 }

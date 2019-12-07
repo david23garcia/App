@@ -1,72 +1,45 @@
 <template>
-  <v-app id="inspire">
-    <v-content>
-      <v-container
-        class="fill-height"
-        fluid
-      >
-        <v-row
-          align="center"
-          justify="center"
-        >
-          <v-col
-            cols="12"
-            sm="8"
-            md="4"
-          >
-            <v-card>
-              <v-toolbar
-                color="primary"
-                dark
-                flat
-              >
-                <v-toolbar-title>Iniciar Sesión</v-toolbar-title>
-                <v-spacer></v-spacer>
-                <v-tooltip bottom>
-<!--                  <template v-slot:activator="{ on }">-->
-<!--                  </template>-->
-                  <span>Source</span>
-                  <span>Codepen</span>
-                </v-tooltip>
-              </v-toolbar>
-              <v-card-text>
-                <v-form>
-                  <v-text-field
-                    v-model="email"
-                    label="Email"
-                    prepend-icon="mdi-account"
-                  ></v-text-field>
-                  <v-text-field
-                    v-model="password"
-                    label="Contraseña"
-                    prepend-icon="mdi-lock"
-                    type="password"
-                  ></v-text-field>
-                </v-form>
-              </v-card-text>
-              <v-card-actions>
-                <v-spacer></v-spacer>
-                <v-btn color="primary" @click="submit">Login</v-btn>
-              </v-card-actions>
-            </v-card>
-          </v-col>
-        </v-row>
-      </v-container>
-    </v-content>
-  </v-app>
+  <v-card>
+    <v-card-title>Iniciar Sesión</v-card-title>
+    <v-card-text>
+      <v-form>
+        <v-text-field
+          v-model="email"
+          label="Email"
+          prepend-icon="mdi-account"
+        ></v-text-field>
+        <v-text-field
+          v-model="password"
+          label="Contraseña"
+          prepend-icon="mdi-lock"
+          type="password"
+        ></v-text-field>
+      </v-form>
+    </v-card-text>
+    <v-card-actions>
+      <v-spacer></v-spacer>
+      <v-btn @click="submit">Login</v-btn>
+      <v-btn to="/">Cancelar</v-btn>
+    </v-card-actions>
+  </v-card>
 </template>
 
 <script>
-import { loginFirebase } from '../services/api'
+import { login } from '../services/api'
+// import { mutations } from '../store/dataset'
+
 export default {
   data: () => ({
     email: '',
     password: ''
   }),
-
   methods: {
     submit () {
-      loginFirebase(this.email, this.password)
+      console.log(this.email, this.password)
+      login({ email: this.email, password: this.password }).then(function () {
+        // mutations.setIsLogin({ login: true })
+        window.location.href = "/"
+      })
     }
   }
 }

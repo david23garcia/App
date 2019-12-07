@@ -55,8 +55,7 @@
 import { validationMixin } from 'vuelidate'
 import { required, maxLength } from 'vuelidate/lib/validators'
 import minLength from 'vuelidate/src/validators/minLength'
-import { mapActions } from 'vuex'
-import { Collection, registerUser, Rol } from '../services/api'
+import { registerUser, Rol } from '../services/api'
 
 export default {
   mixins: [validationMixin],
@@ -123,7 +122,6 @@ export default {
     }
   },
   methods: {
-    ...mapActions('dataset', ['updateModel']),
     submit () {
       let user = {}
       user = Object.assign(user, {
@@ -135,8 +133,7 @@ export default {
         password: this.password,
         role: Rol.User
       })
-      registerUser(this.email, this.password)
-      this.updateModel({ collection: Collection.User, data: user })
+      registerUser(user)
     },
   }
 }

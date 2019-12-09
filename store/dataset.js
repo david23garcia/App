@@ -159,11 +159,12 @@ export const getters = {
     return state.roleUser
   },
   getListUser: state => () => {
-    if(state.isLogin) {
-      return state.listUserLogin
-    } else {
-      return state.listUserLogout
-    }
+    // if(state.isLogin) {
+    //   return state.listUserLogin
+    // } else {
+    //   return state.listUserLogout
+    // }
+    return state.listUserLogout.concat(state.listUserLogin)
   },
   getTitle: state => () => {
     return state.title

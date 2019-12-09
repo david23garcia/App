@@ -25,21 +25,29 @@
 </template>
 
 <script>
-import { login } from '../services/api'
 // import { mutations } from '../store/dataset'
+
+import { mapActions, mapGetters } from 'vuex'
 
 export default {
   data: () => ({
     email: '',
     password: ''
   }),
+  // mounted() {
+  //   this.initAuth()
+  // },
+  // destroyed() {
+  // },
+  computed: {
+    ...mapGetters('dataset', ['logged'])
+  },
   methods: {
+    ...mapActions('session', ['login', 'initAuth']),
     submit () {
-      console.log(this.email, this.password)
-      login({ email: this.email, password: this.password }).then(function () {
-        // mutations.setIsLogin({ login: true })
-        window.location.href = "/"
-      })
+      console.log("mail: ", this.email, "pass: ", this.password)
+      this.login({ email: this.email, password: this.password })
+      window.location.href = "/"
     }
   }
 }

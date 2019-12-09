@@ -140,8 +140,30 @@ function getCurrentUserPromise (auth) {
 export const getCurrentUser = async () => {
   const auth = await getAuth()
   if (auth.currentUser) {
-    return auth.currentUser
+    return {  displayName: auth.currentUser.displayName,
+      uid:  auth.currentUser.uid,
+      email:  auth.currentUser.emailVerified }
   }
   const result = await getCurrentUserPromise(auth)
   return result
+}
+
+export const onAuthStateChanged = async () => {
+  const auth = await  getAuth()
+  console.log("ESTOY DENTRO DE onAuthStateChanged")
+  auth.onAuthStateChanged(user => {
+    return user
+  })
+}
+
+export const signOut = async () => {
+  const auth = await getAuth()
+  return auth.signOut()
+}
+
+export const signInWithEmailAndPassword = async (email, password) => {
+  const auth = await getAuth()
+  auth.signInWithEmailAndPassword(email, password).then((user) => {
+    return user.user
+  })
 }

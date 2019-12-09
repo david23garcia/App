@@ -150,7 +150,8 @@ export const getCurrentUser = async () => {
 
 export const onAuthStateChanged = async () => {
   const auth = await  getAuth()
-  return auth.onAuthStateChanged( user => {
+  console.log("ESTOY DENTRO DE onAuthStateChanged")
+  auth.onAuthStateChanged(user => {
     return user
   })
 }
@@ -162,7 +163,7 @@ export const signOut = async () => {
 
 export const signInWithEmailAndPassword = async (email, password) => {
   const auth = await getAuth()
-  return auth.signInWithEmailAndPassword(email, password).then((user) => {
+  auth.signInWithEmailAndPassword(email, password).then((user) => {
     return user.user
   })
 }

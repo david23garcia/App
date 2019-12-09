@@ -166,7 +166,7 @@ export default {
     },
   computed: {
     ...mapGetters('dataset', ['getTitle', 'getListCol', 'getListUser']),
-    ...mapGetters('dataset', ['logged'])
+    ...mapGetters('session', ['logged'])
   },
   methods: {
     ...mapActions('dataset', ['listenCol', 'unlistenCol']),

@@ -5,7 +5,7 @@ export const state = () => ({
     uid: null, // no null si está logueado
     role : null
   },
-  afterLogin: '/users', // donde dirigirse una vez complete el login (si accedió y no tenía permiso)
+  afterLogin: '/', // donde dirigirse una vez complete el login (si accedió y no tenía permiso)
   listeningAuth: false
 })
 
@@ -18,6 +18,8 @@ export const getters = {
 export const mutations = {
   setUser(state, user) {
     if (user) {
+      console.log("ESTOY DENTRO DEL SET CON VALORES: ")
+      console.log(user)
       state.user.uid = user.uid
       state.user.role = user.role
     } else {
@@ -36,17 +38,22 @@ export const mutations = {
 
 export const actions = {
   async initAuth({ state, commit }) {
+    console.log("ESTOY DENTRO DE LA FUNCION initAuth")
     if (!state.listeningAuth) {
       commit('setListeningAuth', true)
-      const user = onAuthStateChanged()
-      // const localUser = getters.getUser(user.uid)
-      commit('setUser', { uid: user.uid, role: null })
-      const currentUser = await getCurrentUser()  // Obtiene el usuario si no se cerrá sesión
+      console.log("VOY A LLAMAR A onAuthStateChanged")
+      onAuthStateChanged().then(user => {
+        console.log("estoy dentro del then y voy a llamar a set con ")
+        console.log(user)
+        commit('setUser', { uid: user.uid, role: null })
+      })
+      const user = await getCurrentUser()  // Obtiene el usuario si no se cerrá sesión
+      console.log("ACABO DE LLAMAR A getCurrentUser y su resultado es ")
+      console.log(user)
       const prevUid = state.user.uid
-      const newUid = currentUser ? currentUser.uid : null
+      const newUid = user ? user.uid : null
       if (prevUid !== newUid){
-        // const localUser = getters.getUser(currentUser.uid)
-        commit('setUser', { uid: currentUser.uid, role: null })
+        commit('setUser', { uid: user.uid, role: null })
       }
     }
   },

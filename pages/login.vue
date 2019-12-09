@@ -34,19 +34,19 @@ export default {
     email: '',
     password: ''
   }),
-  mounted() {
-    this.initAuth()
-  },
-  destroyed() {
-  },
+  // mounted() {
+  //   this.initAuth()
+  // },
+  // destroyed() {
+  // },
   computed: {
     ...mapGetters('dataset', ['logged'])
   },
   methods: {
-    ...mapActions('session', ['loginSession', 'initAuth']),
+    ...mapActions('session', ['login', 'initAuth']),
     submit () {
       console.log("mail: ", this.email, "pass: ", this.password)
-      this.loginSession({ email: this.email, password: this.password })
+      this.login({ email: this.email, password: this.password })
       window.location.href = "/"
     }
   }

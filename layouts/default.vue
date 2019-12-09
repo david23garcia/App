@@ -25,7 +25,7 @@
             </v-list-item-content>
           </v-list-item>
         <v-divider></v-divider>
-        <v-list-item v-if="this.session()"
+        <v-list-item v-if="this.logged"
           to="/user/id"
           router
           exact
@@ -49,8 +49,8 @@
             <v-list-item-title v-text="help" />
           </v-list-item-content>
         </v-list-item>
-        <v-list-item v-if="this.session()"
-          @click="exit()"
+        <v-list-item v-if="this.logged"
+          @click="this.logout"
           router
           exact
         >
@@ -100,7 +100,7 @@
           </v-list>
         </v-card>
       </v-menu>
-      <v-menu v-if="this.session()"
+      <v-menu v-if="this.logged"
         v-model="menu"
         :close-on-content-click="false"
         :nudge-width="500"
@@ -140,8 +140,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import basket from '../components/basket'
-import { Collection, logout, userSession } from '../services/api'
-import { actions } from '../store/dataset'
+import { Collection } from '../services/api'
 export default {
   components: { basket },
   data () {
@@ -155,57 +154,23 @@ export default {
       profile: 'Cuenta',
       help: 'Ayuda',
       exit: 'Cerrar Sesión',
-      shop: Collection.Shop,
-      login: userSession()
+      shop: Collection.Shop
     }
   },
-  // mounted() {
-  //   this.listenCol(this.shop)
-  // },
-  // destroyed() {
-  //   this.unlistenCol(this.shop)
-  // },
-  beforeCreate () {
-    console.log('1 - beforeCreate')
-  },
-  created () {
-    console.log('2 - created')
-  },
-  beforeMount () {
-    console.log('3 - beforeMount')
-  },
-  mounted () {
-    this.listenCol(this.shop)
-    console.log('4 - mounted')
-  },
-  beforeUpdate () {
-    console.log('5 - beforeUpdate')
-  },
-  updated () {
-    console.log('6 - updated')
-  },
-  beforeDestroy () {
-    console.log('7 - beforeDestroy')
-  },
-  destroyed () {
-    this.unlistenCol(this.shop)
-    console.log('8 - destroyed')
-  },
+    mounted() {
+      this.listenCol(this.shop)
+      this.initAuth()
+    },
+    destroyed() {
+      this.unlistenCol(this.shop)
+    },
   computed: {
-    ...mapGetters('dataset', ['getTitle', 'getListCol', 'getListUser', 'getIsLogin', 'getTitle']),
+    ...mapGetters('dataset', ['getTitle', 'getListCol', 'getListUser']),
+    ...mapGetters('dataset', ['logged'])
   },
   methods: {
-    ...mapActions('dataset', ['listenCol', 'unlistenCol', 'setIsLogin']),
-    session(){
-      return userSession()
-    }
+    ...mapActions('dataset', ['listenCol', 'unlistenCol']),
+    ...mapActions('session', ['logout', 'initAuth']),
   },
-
-  exit(){
-    logout().then(function () {
-      actions.setIsLogin(false)
-      window.location.href = "/"
-    })
-  }
 }
 </script>

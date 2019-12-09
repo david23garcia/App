@@ -145,3 +145,25 @@ export const getCurrentUser = async () => {
   const result = await getCurrentUserPromise(auth)
   return result
 }
+
+export const onAuthStateChanged = async () => {
+  const auth = await  getAuth()
+  auth.onAuthStateChanged( user => {
+    return user
+  })
+}
+
+export const signOut = async () => {
+  const auth = await getAuth()
+  return auth.signOut()
+}
+
+export const signInWithEmailAndPassword = async (email, password) => {
+  const auth = await getAuth()
+  auth.signInWithEmailAndPassword(email, password).then((user) => {
+    if(user) return user
+    else return null
+  }).catch(() => {
+    return null
+  })
+}

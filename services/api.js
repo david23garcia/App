@@ -148,11 +148,6 @@ export const registerUser = async function (data) {
   })
 }
 
-export const login = async function ({ email, password }) {
-  const fb = await getAuth()
-  return fb.signInWithEmailAndPassword(email, password)
-}
-
 export const getDoc = async function (collection, id) {
   const db = await getDB()
   return db.collection(collection).doc(id).get()
@@ -163,19 +158,3 @@ export const createDocumentById = async function (collection, data, id){
   db.collection(collection).doc(id).set(data)
 }
 
-export const userSession = async function (){
-  const fb = await getAuth()
-  fb.onAuthStateChanged(function (user) {
-    if(user) {
-      return true
-    } else {
-      return false
-    }
-  })
-
-}
-
-export const logout = async function () {
-  const fb = await getAuth()
-  return fb.signOut()
-}

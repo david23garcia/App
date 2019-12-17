@@ -1,140 +1,137 @@
 <template>
-  <form>
-    <v-text-field
-      v-model="name"
-      :error-messages="nameErrors"
-      :counter="10"
-      label="Nombre"
-      required
-      @input="$v.name.$touch()"
-      @blur="$v.name.$touch()"
-    ></v-text-field>
-    <v-text-field
-      v-model="phone"
-      :error-messages="phoneErrors"
-      label="Telefono"
-      @input="$v.phone.$touch()"
-      @blur="$v.phone.$touch()"
-    ></v-text-field>
-    <v-text-field
-      v-model="email"
-      :error-messages="emailErrors"
-      label="Email"
-      @input="$v.email.$touch()"
-      @blur="$v.email.$touch()"
-    ></v-text-field>
-    <v-text-field
-      v-model="description"
-      label="Descripcion"
-      :error-messages="descriptionErrors"
-      @input="$v.description.$touch()"
-      @blur="$v.description.$touch()"
-    ></v-text-field>
-    <p>Dirección</p>
-    <v-divider></v-divider>
-    <v-row>
-      <v-col cols="1">
-        <v-text-field
-          v-model="type"
-          label="Tipo Via"
-          :error-messages="typeErrors"
-          @input="$v.type.$touch()"
-          @blur="$v.type.$touch()"
-        ></v-text-field>
-      </v-col>
-      <v-col cols="8">
-        <v-text-field
-          v-model="street"
-          label="Calle"
-          :error-messages="streetErrors"
-          @input="$v.street.$touch()"
-          @blur="$v.street.$touch()"
-        ></v-text-field>
-      </v-col>
-      <v-col cols="1">
-        <v-text-field
-          v-model="number"
-          label="Numero"
-          :error-messages="numberErrors"
-          @input="$v.number.$touch()"
-          @blur="$v.number.$touch()"
-        ></v-text-field>
-      </v-col>
-      <v-col cols="1">
-        <v-text-field
-          v-model="floor"
-          :error-messages="floorErrors"
-          label="Piso"
-          @input="$v.floor.$touch()"
-          @blur="$v.floor.$touch()"
-        ></v-text-field>
-      </v-col>
-      <v-col cols="1">
-        <v-text-field
-          v-model="letter"
-          :error-messages="letterErrors"
-          label="Letra"
-          @input="$v.letter.$touch()"
-          @blur="$v.letter.$touch()"
-        ></v-text-field>
-      </v-col>
-    </v-row>
-    <v-row>
-      <v-col cols="4">
-        <v-text-field
-          v-model="city"
-          label="Ciudad"
-          :error-messages="cityErrors"
-          @input="$v.city.$touch()"
-          @blur="$v.city.$touch()"
-        ></v-text-field>
-      </v-col>
-      <v-col cols="3">
-        <v-text-field
-          v-model="province"
-          label="Provincia"
-          :error-messages="provinceErrors"
-          @input="$v.province.$touch()"
-          @blur="$v.province.$touch()"
-        ></v-text-field>
-      </v-col>
-      <v-col cols="3">
-        <v-text-field
-          v-model="state"
-          label="Pais"
-          :error-messages="stateErrors"
-          @input="$v.state.$touch()"
-          @blur="$v.state.$touch()"
-        ></v-text-field>
-      </v-col>
-      <v-col cols="2">
-        <v-text-field
-          v-model="cv"
-          label="Codigo Postal"
-          :error-messages="cvErrors"
-          @input="$v.cv.$touch()"
-          @blur="$v.cv.$touch()"
-        ></v-text-field>
-      </v-col>
-    </v-row>
-    <v-btn class="mr-4" @click="submit" to="/">Registrarse</v-btn>
-    <v-btn to="/">Cancelar</v-btn>
-  </form>
+  <v-card cols="10">
+    <v-card-title>Registrar Comercio</v-card-title>
+    <v-form>
+      <v-text-field
+        v-model="name"
+        :error-messages="nameErrors"
+        :counter="10"
+        label="Nombre"
+        required
+        @input="$v.name.$touch()"
+        @blur="$v.name.$touch()"
+      ></v-text-field>
+      <v-text-field
+        v-model="phone"
+        :error-messages="phoneErrors"
+        label="Telefono"
+        @input="$v.phone.$touch()"
+        @blur="$v.phone.$touch()"
+      ></v-text-field>
+      <v-text-field
+        v-model="description"
+        label="Descripcion"
+        :error-messages="descriptionErrors"
+        @input="$v.description.$touch()"
+        @blur="$v.description.$touch()"
+      ></v-text-field>
+      <p>Dirección</p>
+      <v-divider></v-divider>
+      <v-row>
+        <v-col cols="1">
+          <v-text-field
+            v-model="type"
+            label="Tipo Via"
+            :error-messages="typeErrors"
+            @input="$v.type.$touch()"
+            @blur="$v.type.$touch()"
+          ></v-text-field>
+        </v-col>
+        <v-col cols="8">
+          <v-text-field
+            v-model="street"
+            label="Calle"
+            :error-messages="streetErrors"
+            @input="$v.street.$touch()"
+            @blur="$v.street.$touch()"
+          ></v-text-field>
+        </v-col>
+        <v-col cols="1">
+          <v-text-field
+            v-model="number"
+            label="Numero"
+            :error-messages="numberErrors"
+            @input="$v.number.$touch()"
+            @blur="$v.number.$touch()"
+          ></v-text-field>
+        </v-col>
+        <v-col cols="1">
+          <v-text-field
+            v-model="floor"
+            :error-messages="floorErrors"
+            label="Piso"
+            @input="$v.floor.$touch()"
+            @blur="$v.floor.$touch()"
+          ></v-text-field>
+        </v-col>
+        <v-col cols="1">
+          <v-text-field
+            v-model="letter"
+            :error-messages="letterErrors"
+            label="Letra"
+            @input="$v.letter.$touch()"
+            @blur="$v.letter.$touch()"
+          ></v-text-field>
+        </v-col>
+      </v-row>
+      <v-row>
+        <v-col cols="4">
+          <v-text-field
+            v-model="city"
+            label="Ciudad"
+            :error-messages="cityErrors"
+            @input="$v.city.$touch()"
+            @blur="$v.city.$touch()"
+          ></v-text-field>
+        </v-col>
+        <v-col cols="3">
+          <v-text-field
+            v-model="province"
+            label="Provincia"
+            :error-messages="provinceErrors"
+            @input="$v.province.$touch()"
+            @blur="$v.province.$touch()"
+          ></v-text-field>
+        </v-col>
+        <v-col cols="3">
+          <v-text-field
+            v-model="state"
+            label="Pais"
+            :error-messages="stateErrors"
+            @input="$v.state.$touch()"
+            @blur="$v.state.$touch()"
+          ></v-text-field>
+        </v-col>
+        <v-col cols="2">
+          <v-text-field
+            v-model="cv"
+            label="Codigo Postal"
+            :error-messages="cvErrors"
+            @input="$v.cv.$touch()"
+            @blur="$v.cv.$touch()"
+          ></v-text-field>
+        </v-col>
+      </v-row>
+      <v-card align="center">
+        <v-btn class="mr-4" @click="submit">Registrarse</v-btn>
+        <v-btn to="/">Cancelar</v-btn>
+      </v-card>
+    </v-form>
+  </v-card>
 </template>
 
 <script>
 import { validationMixin } from 'vuelidate'
-import { required, maxLength, email } from 'vuelidate/lib/validators'
+import { required, maxLength } from 'vuelidate/lib/validators'
 import minLength from 'vuelidate/src/validators/minLength'
-import { mapActions } from 'vuex'
-import { Collection } from '../services/api'
+import { mapActions, mapGetters } from 'vuex'
+import { Collection, Rol } from '../services/api'
 
 export default {
   mixins: [validationMixin],
   name: 'shopform',
   validations: {
     name: { required, maxLength: maxLength(10) },
-    email: { required, email },
     phone: { required, maxLength: maxLength(9) },
     password: { required, minLength: minLength(8) },
     description: { required },
@@ -151,7 +148,6 @@ export default {
   },
   data: () => ({
     name: '',
-    email: '',
     phone: '',
     description: '',
     type: '',
@@ -164,20 +160,23 @@ export default {
     state: '',
     cv: ''
   }),
-
+  mounted() {
+    this.listenCol(Collection.User)
+    this.listenDoc(Collection.User, this.uid)
+    this.initAuth()
+  },
+  destroyed() {
+    this.unlistenCol(Collection.User)
+    this.unlistenDoc(Collection.User, this.uid)
+  },
   computed: {
+    ...mapGetters('session', ['logged', 'uid', 'email', 'phoneNumber', 'role']),
+    ...mapGetters('dataset', ['getUser']),
     nameErrors () {
       const errors = []
       if (!this.$v.name.$dirty) { return errors }
       !this.$v.name.maxLength && errors.push('Name must be at most 10 characters long')
       !this.$v.name.required && errors.push('Name is required.')
-      return errors
-    },
-    emailErrors () {
-      const errors = []
-      if (!this.$v.email.$dirty) { return errors }
-      // !this.$v.email.maxLength && errors.push('Must be valid e-mail')
-      !this.$v.email.required && errors.push('E-mail is required')
       return errors
     },
     phoneErrors () {
@@ -259,13 +258,18 @@ export default {
     }
   },
   methods: {
-    ...mapActions('dataset', ['updateModel']),
+    ...mapActions('dataset', ['updateModel', 'createModel', 'listenCol', 'unlistenCol', 'listenDoc', 'unlistenDoc']),
+    ...mapActions('session', ['initAuth']),
     submit () {
-      let shop = {}
-      shop = Object.assign(shop, {
+      const id = this.createShop()
+      this.updateUser(id)
+    },
+    createShop() {
+      const shop = {
+        userId: this.uid,
         name: this.name,
         email: this.email,
-        phone: this.phone,
+        phone: [this.phone, typeof this.phoneNumber !== 'undefined' ? this.phoneNumber : ''],
         description: this.description,
         address: {
           type: this.type,
@@ -277,10 +281,22 @@ export default {
           province: this.province,
           state: this.state,
           cv: this.cv
-        }
-      })
-      this.updateModel({ collection: Collection.Shop, data: shop })
-      this.$emit('isForm', false)
+        },
+        shippingMethods: [],
+        isBlocked: false,
+        isRemoved: false
+      }
+      const shopId = btoa(this.name.concat(this.uid))
+      this.createModel({ collection: Collection.Shop, data: shop, id: shopId })
+      return shopId
+    },
+    updateUser(shopId) {
+      const user = this.getUser(this.uid)
+      this.updateModel({ collection: Collection.User, data:  {
+          role: Rol.Admin,
+          shopsId: [shopId, ...user.shopsId]
+        }, id: this.uid })
+      // será necesario actualizar el user de session con el role o hacerlo de la forma que me diga el profe lo de los roles
     }
   }
 }

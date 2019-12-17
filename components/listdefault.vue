@@ -19,9 +19,9 @@
     ></v-data-table>
   </v-card>
   <v-card v-else>
-    <shopform v-if="type===shop" :toReturn="'admin'"></shopform>
-    <userform v-else-if="type===user" :toReturn="'admin'"></userform>
-    <shopform v-else-if="type===article" :toReturn="'admin'"></shopform>
+    <shopform></shopform>
+    <userform></userform>
+    <shopform></shopform>
   </v-card>
 </template>
 

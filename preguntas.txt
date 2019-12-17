@@ -8,3 +8,26 @@ Cosas que Rematar:
 https://codesandbox.io/s/536mvppkq4
 https://materialdesignicons.com/
 
+
+  // ESTO SON FUNCIONES QUE GESTIONAN EL USUARIO Y CONECTAN CON FIREBASE AUTH, DEJARLAS Y CUANDO HAGAMOS EL REGISTRO LAS VEMOS
+  // async resetPasswordWithEmail({ commit }, payload) {
+  //   const { email } = payload
+  //   const auth = await getAuth()
+  //   await auth.sendPasswordResetEmail(email)
+  //   return true
+  // },
+  // async sendVerificationEmail({ state, dispatch }) {
+  //   const auth = await getAuth()
+  //   await auth.currentUser.sendEmailVerification()
+  //   return true
+  // },
+  // async signUserUp({ state, commit, dispatch }, payload) {
+  //   const auth = await getAuth()
+  //   const user = await auth.createUserWithEmailAndPassword(
+  //     payload.email,
+  //     payload.password
+  //   )
+  //   await dispatch('setUser', user ? user.user : null)
+  //   return state.user
+  // },
+

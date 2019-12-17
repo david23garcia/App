@@ -8,22 +8,27 @@
       app
     >
       <v-list>
-        <v-subheader inset>COMERCIOS</v-subheader>
-        <v-divider></v-divider>
-          <v-list-item
-            v-for="(item, i) in this.getListCol(shop)"
-            :key="i"
-            :to="/shops/i.name"
-            router
-            exact
-          >
-            <v-list-item-action>
-              <v-icon>mdi-playstation</v-icon>
-            </v-list-item-action>
-            <v-list-item-content>
-              <v-list-item-title v-text="item.name" />
-            </v-list-item-content>
-          </v-list-item>
+<!--        <v-subheader inset>COMERCIOS</v-subheader>-->
+<!--        <v-divider></v-divider>-->
+<!--          <v-list-item-->
+<!--            v-for="(item, i) in this.getListCol(shop).filter((s) => {-->
+<!--              return !((s.isBlocked === true) || (s.isRemoved === true))-->
+<!--             })"-->
+<!--            :key="i"-->
+<!--            :to="'/shops/'+item.title"-->
+<!--            router-->
+<!--            exact-->
+<!--          >-->
+<!--            <v-list-item-action>-->
+<!--              <v-icon>mdi-playstation</v-icon>-->
+<!--            </v-list-item-action>-->
+<!--            <v-list-item-content>-->
+<!--              <v-list-item-title v-text="item.id" />-->
+<!--            </v-list-item-content>-->
+<!--          </v-list-item>-->
+        <shoplayout v-if="(this.role === this.employee || this.role === this.admin) && this.logged" ></shoplayout>
+        <adminlayout v-else-if="this.role === this.superAdmin && this.logged"></adminlayout>
+        <userlayout v-else></userlayout>
         <v-divider></v-divider>
         <v-list-item v-if="this.logged"
           to="/user/id"
@@ -70,7 +75,7 @@
       app
     >
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <v-btn icon to="/"><v-icon>mdi-home</v-icon></v-btn>
+      <v-btn icon :to=this.path><v-icon>mdi-home</v-icon></v-btn>
       <v-toolbar-title v-text="this.getTitle()" />
       <v-spacer />
       <v-menu
@@ -140,9 +145,12 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import basket from '../components/basket'
-import { Collection } from '../services/api'
+import { Collection, Rol } from '../services/api'
+import Userlayout from '../components/userlayout'
+import Adminlayout from '../components/adminlayout'
+import Shoplayout from '../components/shoplayout'
 export default {
-  components: { basket },
+  components: { Shoplayout, Adminlayout, Userlayout, basket },
   data () {
     return {
       clipped: false,
@@ -154,7 +162,12 @@ export default {
       profile: 'Cuenta',
       help: 'Ayuda',
       exit: 'Cerrar Sesión',
-      shop: Collection.Shop
+      shop: Collection.Shop,
+      user: Rol.User,
+      superAdmin: Rol.Superadmin,
+      employee: Rol.Employee,
+      admin: Rol.Admin
+
     }
   },
     mounted() {
@@ -166,11 +179,11 @@ export default {
     },
   computed: {
     ...mapGetters('dataset', ['getTitle', 'getListCol', 'getListUser']),
-    ...mapGetters('session', ['logged'])
+    ...mapGetters('session', ['logged', 'uid', 'role', 'path'])
   },
   methods: {
     ...mapActions('dataset', ['listenCol', 'unlistenCol']),
     ...mapActions('session', ['logout', 'initAuth']),
-  },
+  }
 }
 </script>

@@ -1,18 +1,14 @@
 <template>
-  <v-row align="center">
-    <v-radio-group v-model="type" row>
-      <v-radio label="Registrar Usuario" value="user"></v-radio>
-      <v-radio label="Registrar Comercio" value="shop"></v-radio>
-    </v-radio-group>
-    <userform v-if="type === 'user'" cols="6" :isActive="false"></userform>
-    <shopform v-else col="6" :toReturn="''">
-    </shopform>
-  </v-row>
+  <userform v-if="!this.logged" cols="6"></userform>
+  <shopform v-else col="6">
+  </shopform>
 </template>
 
 <script>
+import { mapActions, mapGetters } from 'vuex'
 import userform from '../components/userform'
 import shopform from '../components/shopform'
+
 export default {
   components: {
     userform,
@@ -20,7 +16,18 @@ export default {
   },
   data: () => ({
     type: 'user'
-  })
+  }),
+  mounted() {
+    this.initAuth()
+  },
+  destroyed() {
+  },
+  computed: {
+    ...mapGetters('session', ['logged'])
+  },
+  methods: {
+    ...mapActions('session', ['initAuth']),
+  },
 }
 </script>
 

@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { addDocument, Collection } from '../services/api'
+import { addDocument, addDocumentById, Collection, updateDocument } from '../services/api'
 import {
   syncJsonCol,
   listenCollection,
@@ -114,7 +114,6 @@ export const getters = {
   getCol: state => (kind) => {
     return state.data.col[kind]
   },
-  getLang: state => state.defaultLang,
   getDoc: state => ({ kind, id }) => {
     if (state.listening.col[kind] && state.data.col[kind].hasOwnProperty(id)) {
       // from collection data
@@ -129,17 +128,11 @@ export const getters = {
       return null
     }
   },
-  getModel: (state, getters) => (id) => {
-    return getters.getDoc({ kind: Collection.Model, id })
+  getUser : (state, getters, rootState, rootGetters) => (id) => {
+    return  getters.getDoc({ kind: Collection.User, id })
   },
-  getDataset: (state, getters) => (id) => {
-    return getters.getDoc({ kind: Collection.Dataset, id })
-  },
-  getRegion: (state, getters) => (id) => {
-    return getters.getDoc({ kind: Collection.Region, id })
-  },
-  getUser : (state, getters) => (id) => {
-    return getters.getDoc( {kind: Collection.User, id})
+  getShop : (state, getters) => (id) => {
+    return getters.getDoc( {kind: Collection.Shop, id})
   },
   getListCol: state => kind => {
     const data = state.data.col[kind]
@@ -152,12 +145,6 @@ export const getters = {
     const col = keys.map(id => ({ id, ...data[id] }))
     return col.filter(id => id === idDoc)
   },
-  getIsLogin: state => () =>{
-    return state.isLogin
-  },
-  getRoleUser: state => () => {
-    return state.roleUser
-  },
   getListUser: state => () => {
     // if(state.isLogin) {
     //   return state.listUserLogin
@@ -168,7 +155,10 @@ export const getters = {
   },
   getTitle: state => () => {
     return state.title
-}
+  },
+  getRootGetter: (state, getters, rootState, rootGetters) => {
+    return state.getters ? rootGetters['dataset/getters'](this.getters): null
+  }
 
 }
 
@@ -265,10 +255,10 @@ export const actions = {
     commit('removeDocListening', { kind, id })
   },
 
-  updateModel ({ state, dispatch, commit }, { collection, data }) {
-    return addDocument(collection, data)
+  createModel ({ state, dispatch, commit }, { collection, data, id }) {
+    id !== null ? addDocumentById(collection, id, data) : addDocument(collection, data)
   },
-  setIsLogin({ state, dispatch, commit }, login){
-    state.isLogin = login
+  updateModel ({ state, dispatch, commit }, { collection, data, id }) {
+    return updateDocument(collection, id, data)
   }
 }

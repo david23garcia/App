@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { getEndPoint, getDB, getServerTimeStamp, getAuth } from '~/services/fireinit'
+import { getEndPoint, getDB, getServerTimeStamp } from '~/services/fireinit'
 
 export const UIActions = {
   ChooseModelDirectly: 'chooseModelDirectly'
@@ -137,23 +137,23 @@ export const addDocumentByUid = async function (kind, field, uid) {
   return db.collection(kind).doc(uid).set(field)
 }
 
-export const registerUser = async function (data) {
-  console.log('quiero registrar a un usuario')
-  const fb = await getAuth()
-  return fb.createUserWithEmailAndPassword( data.email , data.password).then(function (user) {
-    return createDocumentById(Collection.User, data, user.user.uid)
-  }).catch(function (error) {
-    console.log("ha ido ko el error")
-    console.log(error.message)
-  })
-}
+// export const registerUser = async function (data) {
+//   console.log('quiero registrar a un usuario')
+//   const fb = await getAuth()
+//   return fb.createUserWithEmailAndPassword( data.email , data.password).then(function (user) {
+//     return updateDocument(Collection.User, data, user.user.uid)
+//   }).catch(function (error) {
+//     console.log("ha ido ko el error")
+//     console.log(error.message)
+//   })
+// }
 
-export const getDoc = async function (collection, id) {
+export const updateDocument = async function (collection, id, data){
   const db = await getDB()
-  return db.collection(collection).doc(id).get()
+  db.collection(collection).doc(id).set(data, {merge: true})
 }
 
-export const createDocumentById = async function (collection, data, id){
+export const addDocumentById = async function (collection, id, data){
   const db = await getDB()
   db.collection(collection).doc(id).set(data)
 }

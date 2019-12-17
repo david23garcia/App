@@ -1,61 +1,70 @@
 <template>
-  <form>
-    <v-text-field
-      v-model="name"
-      :error-messages="nameErrors"
-      :counter="10"
-      label="Nombre"
-      required
-      @input="$v.name.$touch()"
-      @blur="$v.name.$touch()"
-    ></v-text-field>
-    <v-text-field
-      v-model="surname1"
-      :error-messages="surname1Errors"
-      label="Apellido 1"
-      required
-      @input="$v.surname1.$touch()"
-      @blur="$v.surname1.$touch()"
-    ></v-text-field>
-    <v-text-field
-      v-model="surname2"
-      :error-messages="surname2Errors"
-      label="Apellido 2"
-      @input="$v.surname2.$touch()"
-      @blur="$v.surname2.$touch()"
-    ></v-text-field>
-    <v-text-field
-      v-model="phone"
-      :error-messages="phoneErrors"
-      label="Telefono"
-      @input="$v.phone.$touch()"
-      @blur="$v.phone.$touch()"
-    ></v-text-field>
-    <v-text-field
-      v-model="email"
-      :error-messages="emailErrors"
-      label="Email"
-      @input="$v.email.$touch()"
-      @blur="$v.email.$touch()"
-    ></v-text-field>
-    <v-text-field
-      v-model="password"
-      :error-messages="passwordErrors"
-      label="Contraseña"
-      @input="$v.password.$touch()"
-      @blur="$v.password.$touch()"
-      type="password"
-    ></v-text-field>
-    <v-btn class="mr-4" @click="submit" to="/">Registrarse</v-btn>
-    <v-btn to="/">Cancelar</v-btn>
-  </form>
+  <v-card cols="8">
+    <v-card-title>Nuevo Usuario</v-card-title>
+    <span></span>
+    <v-form >
+      <v-text-field
+        cols="10"
+        v-model="name"
+        :error-messages="nameErrors"
+        :counter="10"
+        label="Nombre"
+        required
+        @input="$v.name.$touch()"
+        @blur="$v.name.$touch()"
+      ></v-text-field>
+      <v-text-field
+        v-model="surname1"
+        :error-messages="surname1Errors"
+        label="Apellido 1"
+        required
+        @input="$v.surname1.$touch()"
+        @blur="$v.surname1.$touch()"
+      ></v-text-field>
+      <v-text-field
+        v-model="surname2"
+        :error-messages="surname2Errors"
+        label="Apellido 2"
+        @input="$v.surname2.$touch()"
+        @blur="$v.surname2.$touch()"
+      ></v-text-field>
+      <v-text-field
+        v-model="phone"
+        :error-messages="phoneErrors"
+        label="Telefono"
+        @input="$v.phone.$touch()"
+        @blur="$v.phone.$touch()"
+      ></v-text-field>
+      <v-text-field
+        v-model="email"
+        :error-messages="emailErrors"
+        label="Email"
+        @input="$v.email.$touch()"
+        @blur="$v.email.$touch()"
+      ></v-text-field>
+      <v-text-field
+        v-model="password"
+        :error-messages="passwordErrors"
+        label="Contraseña"
+        @input="$v.password.$touch()"
+        @blur="$v.password.$touch()"
+        type="password"
+      ></v-text-field>
+      <span></span>
+      <v-card align="center">
+        <v-btn class="mr-4" @click="submit" to="/">Registrarse</v-btn>
+        <v-btn to="/">Cancelar</v-btn>
+      </v-card>
+      <span></span>
+    </v-form>
+    <span></span>
+  </v-card>
 </template>
 
 <script>
 import { validationMixin } from 'vuelidate'
 import { required, maxLength } from 'vuelidate/lib/validators'
 import minLength from 'vuelidate/src/validators/minLength'
-import { registerUser, Rol } from '../services/api'
 
 export default {
   mixins: [validationMixin],
@@ -123,17 +132,17 @@ export default {
   },
   methods: {
     submit () {
-      let user = {}
-      user = Object.assign(user, {
-        name: this.name,
-        surname1: this.surname1,
-        surname2: this.surname2,
-        email: this.email,
-        phone: this.phone,
-        password: this.password,
-        role: Rol.User
-      })
-      registerUser(user)
+      // let user = {}
+      // user = Object.assign(user, {
+      //   name: this.name,
+      //   surname1: this.surname1,
+      //   surname2: this.surname2,
+      //   email: this.email,
+      //   phone: this.phone,
+      //   password: this.password,
+      //   role: Rol.User
+      // })
+      // registerUser(user)
     },
   }
 }

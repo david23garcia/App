@@ -28,26 +28,33 @@
 // import { mutations } from '../store/dataset'
 
 import { mapActions, mapGetters } from 'vuex'
+import { Collection } from '../services/api'
 
 export default {
   data: () => ({
     email: '',
     password: ''
   }),
-  // mounted() {
-  //   this.initAuth()
-  // },
-  // destroyed() {
-  // },
+  mounted() {
+    this.listenCol(Collection.User)
+    this.initAuth()
+  },
+  destroyed() {
+    this.unlistenCol(Collection.User)
+  },
   computed: {
-    ...mapGetters('dataset', ['logged'])
+    ...mapGetters('session', ['logged', 'role']),
   },
   methods: {
     ...mapActions('session', ['login', 'initAuth']),
+    ...mapActions('dataset', ['listenCol', 'unlistenCol']),
     submit () {
-      console.log("mail: ", this.email, "pass: ", this.password)
-      this.login({ email: this.email, password: this.password })
-      window.location.href = "/"
+      this.login({ email: this.email, password: this.password }).then(function (path) {
+        // console.log(path)
+        // window.location.href = path
+      })
+      // console.log(path)
+      // window.location.href = "/"
     }
   }
 }

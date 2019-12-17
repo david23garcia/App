@@ -13,19 +13,29 @@
     "test": "jest"
   },
   "dependencies": {
+    "@mdi/js": "^4.5.95",
+    "@nuxtjs/pwa": "^3.0.0-0",
+    "firebase": "^7.4.0",
     "nuxt": "^2.10.0",
-    "@nuxtjs/pwa": "^3.0.0-0"
+    "vuex": "latest"
   },
   "devDependencies": {
-    "@nuxtjs/vuetify": "^1.9.0",
     "@nuxtjs/eslint-config": "^1.1.2",
     "@nuxtjs/eslint-module": "^1.1.0",
-    "babel-eslint": "^10.0.3",
-    "eslint": "^6.5.1",
-    "eslint-plugin-nuxt": ">=0.4.3",
+    "@nuxtjs/vuetify": "^1.9.0",
     "@vue/test-utils": "^1.0.0-beta.27",
+    "babel-eslint": "^10.0.3",
     "babel-jest": "^24.9.0",
+    "eslint": "^6.5.1",
+    "eslint-config-prettier": "^6.7.0",
+    "eslint-config-vuetify": "^0.4.0",
+    "eslint-plugin-nuxt": ">=0.4.3",
+    "eslint-plugin-prettier": "^3.1.1",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-vue": "^6.0.1",
     "jest": "^24.9.0",
-    "vue-jest": "^4.0.0-0"
+    "material-design-icons-iconfont": "^5.0.1",
+    "vue-jest": "^4.0.0-0",
+    "vuelidate": "^0.7.4"
   }
 }

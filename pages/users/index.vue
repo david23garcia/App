@@ -29,12 +29,6 @@
         :search="search"
       >
         <template v-slot:item.action="{ item }">
-          <v-icon
-            class="mr-2"
-            @click="editItem(item)"
-          >
-            mdi-account-edit
-          </v-icon>
           <v-icon v-if="!item.isBlocked"
             @click="bloquedItem(item)"
           >
@@ -98,19 +92,9 @@ export default {
     ...mapActions('dataset', ['listenCol', 'unlistenCol', 'updateModel']),
     ...mapActions('session', ['ressetPassword']),
     items(){
-      // return this.getListCol(Collection.User).filter((item) => {
-      //   if(this.role === Rol.Admin) {
-      //     return (item.role === Rol.employee) && !((item.isBlocked === true) || (item.isRemoved === true))
-      //   } else {
-      //     return !item.isRemoved === true
-      //   }
-      // })
       return this.getListCol(Collection.User).filter((item) => {
         return !item.isRemoved
       })
-    },
-    editItem(item){
-      console.log(item)
     },
     deleteItem(item){
       this.updateModel({ collection: Collection.User, data:  {

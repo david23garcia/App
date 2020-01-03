@@ -59,7 +59,7 @@ import minLength from 'vuelidate/src/validators/minLength'
 import required from 'vuelidate/src/validators/required'
 import { validationMixin } from 'vuelidate'
 import { mapActions, mapGetters } from 'vuex'
-import { Collection, Rol } from '../services/api'
+import { Collection } from '../services/api'
 
 export default {
   name: 'ArticleForm',
@@ -138,7 +138,6 @@ export default {
         price: this.price,
         quantity: this.quantity,
         barcode: this.barcode,
-        // shopId: this.superAdminIsLogin() ? this.shop.id : this.localUser.shopId,
         shopId: this.localUser.shopId,
         commentary: [],
         assessment: [],
@@ -150,14 +149,7 @@ export default {
     },
     clear () {
       this.$parent.isRegister = false
-    },
-    superAdminIsLogin(){
-      const user = this.localUser
-      return this.logged && (user.role === Rol.Superadmin)
-    },
-    // items(){
-    //   this.getListCol(Collection.Shop).filter(item => !(item.isBlocked || item.isRemoved))
-    // },
+    }
   }
 }
 </script>

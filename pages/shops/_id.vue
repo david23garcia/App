@@ -1,5 +1,5 @@
 <template>
-  <v-row v-if="adminIsLogin() && !isUpdateShop && !isUpdateUser">
+  <v-row v-if="adminIsLogin && !isUpdateShop && !isUpdateUser">
     <v-card
       class="mx-auto"
       max-width="1000"
@@ -45,7 +45,7 @@
         </v-row>
       </v-img>
       <v-row>
-        <v-btn text :id="$route.params.id" @click="isUpdateShop=true">Modificar</v-btn>
+        <v-btn :id="$route.params.id" text @click="isUpdateShop=true">Modificar</v-btn>
         <v-btn text @click="remove()">Eliminar</v-btn>
       </v-row>
     </v-card>
@@ -91,7 +91,7 @@
         </v-row>
       </v-img>
       <v-row>
-        <v-btn text :id="localUser.id" @click="isUpdateUser=true">Modificar</v-btn>
+        <v-btn :id="localUser.id" text @click="isUpdateUser=true">Modificar</v-btn>
         <v-btn text @click="remove()">Eliminar</v-btn>
       </v-row>
     </v-card>
@@ -128,7 +128,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import { Collection, Rol } from '../../services/api'
+import { Collection } from '../../services/api'
 import ArticleCard from '../../components/articleCard'
 import UserUpdateForm from '../../components/userUpdateForm'
 import ShopUpdateForm from '../../components/shopUpdateForm'
@@ -169,7 +169,7 @@ export default {
   },
   computed: {
     ...mapGetters('dataset', ['getListCol', 'getShop']),
-    ...mapGetters('session', ['localUser', 'logged'])
+    ...mapGetters('session', ['localUser', 'logged', 'adminIsLogin'])
   },
   mounted() {
     this.listenCol(Collection.Shop)
@@ -185,9 +185,6 @@ export default {
   methods: {
     ...mapActions('dataset', ['listenCol', 'unlistenCol', 'updateModel']),
     ...mapActions('session', ['initAuth', 'logout']),
-    adminIsLogin () {
-      return this.logged ? this.localUser.role === Rol.Admin : false
-    },
     items () {
       return this.getListCol(Collection.Article).filter((item) => {
         return !item.isRemoved && this.$route.params.id === item.shopId

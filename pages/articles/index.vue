@@ -49,7 +49,7 @@
 
 <script>
   import { mapActions, mapGetters } from 'vuex'
-  import { Collection, Rol } from '../../services/api'
+  import { Collection } from '../../services/api'
   import ArticleForm from '../../components/articleForm'
   import ArticleUpdateForm from '../../components/articleUpdateForm'
 
@@ -73,7 +73,7 @@
     },
     computed: {
       ...mapGetters('dataset', ['getListCol', 'getShop']),
-      ...mapGetters('session', ['localUser']),
+      ...mapGetters('session', ['localUser', 'adminIsLogin']),
     },
     mounted() {
       this.listenCol(Collection.Shop)
@@ -100,12 +100,8 @@
       },
       items(){
         return this.getListCol(Collection.Article).filter((item) => {
-          return this.adminIsLogin() ? item.shopId === this.localUser.shopId && !item.isRemoved : !item.isRemoved
+          return this.adminIsLogin ? item.shopId === this.localUser.shopId && !item.isRemoved : !item.isRemoved
         }).map((item) => ({ shop: this.getShop(item.shopId).name, ...item }))
-      },
-      adminIsLogin(){
-        return this.logged ? this.localUser.role === Rol.Admin : false
-
       }
     }
   }

@@ -25,7 +25,7 @@
         @input="$v.description.$touch()"
         @blur="$v.description.$touch()"
       ></v-text-field>
-      <v-select v-if="superAdminIsLogin()"
+      <v-select v-if="superAdminIsLogin"
       :items="items()"
       menu-props="auto"
       hide-details
@@ -167,7 +167,7 @@ export default {
     user: null
   }),
   computed: {
-    ...mapGetters('session', ['logged', 'uid', 'email', 'phoneNumber', 'localUser']),
+    ...mapGetters('session', ['logged', 'uid', 'email', 'phoneNumber', 'localUser', 'superadminIsLogin']),
     ...mapGetters('dataset', ['getUser', 'getListCol', 'getCountries', 'getProvinces']),
     nameErrors () {
       const errors = []
@@ -291,10 +291,7 @@ export default {
     },
     items(){
       this.getListCol(Collection.User).filter(item => !(item.isBlocked || item.isRemoved))
-    },
-    superAdminIsLogin(){
-      return this.logged ? this.localUser.role === Rol.Superadmin : false
-    },
+    }
   }
 }
 </script>

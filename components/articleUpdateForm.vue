@@ -20,7 +20,7 @@
 <script>
 
 import { mapActions, mapGetters } from 'vuex'
-import { Collection, Rol } from '../services/api'
+import { Collection } from '../services/api'
 
 export default {
   name: 'ArticleUpdateForm',
@@ -30,7 +30,6 @@ export default {
     quantity: null,
   }),
   computed: {
-    ...mapGetters('session', ['localUser']),
     ...mapGetters('dataset', ['getListCol']),
   },
   mounted() {
@@ -69,10 +68,6 @@ export default {
       this.quantity = ''
       this.barcode = ''
       this.$parent.isUpdate = false
-    },
-    superAdminIsLogin(){
-      const user = this.localUser
-      return this.logged && (user.role === Rol.Superadmin)
     },
     // items(){
     //   this.getListCol(Collection.Shop).filter(item => !(item.isBlocked || item.isRemoved))

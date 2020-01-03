@@ -49,7 +49,7 @@
         @input="$v.password.$touch()"
         @blur="$v.password.$touch()"
       ></v-text-field>
-      <v-select v-if="superAdminIsLogin()"
+      <v-select v-if="superAdminIsLogin"
                 :items="items()"
                 menu-props="auto"
                 hide-details
@@ -96,7 +96,7 @@ export default {
     role: ''
   }),
   computed: {
-    ...mapGetters('session', ['logged', 'uid', 'localUser']),
+    ...mapGetters('session', ['logged', 'uid', 'localUser', 'adminIsLogin', 'superadminIsLogin']),
     ...mapGetters('dataset', ['getUser', 'getListCol']),
     nameErrors () {
       const errors = []
@@ -152,8 +152,8 @@ export default {
     ...mapActions('session', ['initAuth', 'registerUser', 'setUser', 'login']),
     async submit () {
       let roleAux
-      if(this.superAdminIsLogin()) roleAux = this.role
-      else if(this.adminIsLogin()) roleAux = Rol.Employee
+      if(this.superAdminIsLogin) roleAux = this.role
+      else if(this.adminIsLogin) roleAux = Rol.Employee
       else roleAux = Rol.User
       let user = {}
       user = Object.assign(user, {
@@ -181,13 +181,7 @@ export default {
     },
     items(){
       return [Rol.User, Rol.Admin, Rol.Employee]
-    },
-    superAdminIsLogin(){
-      return this.logged ? this.localUser.role === Rol.Superadmin : false
-    },
-    adminIsLogin(){
-      return this.logged ? this.localUser.role === Rol.Admin : false
-    },
+    }
   }
 }
 </script>

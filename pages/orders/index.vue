@@ -38,7 +38,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import { Collection, Rol } from '../../services/api'
+import { Collection } from '../../services/api'
 
 export default {
   data() {
@@ -47,7 +47,7 @@ export default {
       headers: [
         { text: 'Nº Pedido', value: 'id' },
         { text: 'Estado', value: 'status' },
-        { text: 'Precio', value: 'price' },
+        { text: 'Precio', value: 'totalPrice' },
         { text: 'Acciones', value: 'action', sortable: false }
       ],
       isRegister: false
@@ -55,7 +55,7 @@ export default {
   },
   computed: {
     ...mapGetters('dataset', ['getListCol', 'getUser']),
-    ...mapGetters('session', ['localUser', 'uid']),
+    ...mapGetters('session', ['localUser', 'uid', 'adminIsLogin', 'userIsLogin']),
   },
   mounted() {
     this.listenCol(Collection.Shop)
@@ -74,22 +74,15 @@ export default {
     // },
     items(){
       return this.getListCol(Collection.Order).filter((item) => {
-        if(this.userIsLogin()){
+        if(this.userIsLogin){
           return item.userId === this.uid
-        } else if(this.adminIsLogin()){
+        } else if(this.adminIsLogin){
           return item.shopId === this.localUser.shopId
         } else {
           return true
         }
       })
-    },
-    adminIsLogin(){
-      return this.logged ? this.localUser.role === Rol.Admin : false
-
-    },
-    userIsLogin(){
-      return this.logged ? this.localUser.role === Rol.User : false
-    },
+    }
   }
 }
 </script>

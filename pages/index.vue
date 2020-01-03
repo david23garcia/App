@@ -1,9 +1,12 @@
 <template>
   <v-col cols="10">
-<!--    <v-row justify="center" align="center">-->
-<!--      <search />-->
-<!--      <filters />-->
-<!--    </v-row>-->
+    <v-text-field
+      v-model="search"
+      append-icon="mdi-magnify"
+      label="Buscar"
+      single-line
+      hide-details
+    ></v-text-field>
     <v-row>
       <article-card v-for="(item, i) in items()" :id="item.id" :key="i"></article-card>
     </v-row>
@@ -49,7 +52,12 @@ export default {
     ...mapActions('session', ['initAuth']),
     items() {
       return this.getListCol(Collection.Article).filter((item) => {
-        return !item.isRemoved
+        if(this.search === ''){
+          return !item.isRemoved
+        } else {
+          return !item.isRemoved && (item.title.toLowerCase().includes(this.search) ||item.description.toLowerCase().includes(this.search))
+        }
+
       })
 
     }

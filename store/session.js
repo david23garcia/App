@@ -31,8 +31,23 @@ export const getters = {
   //   console.log(localUser)
   //   return createPathByRole(!localUser ? localUser.role : Rol.Anonymous)
   // },
-  path: (state) => state.path,
-  localUser: (state, getters, rootState, rootGetters) => state.user.uid ? rootGetters['dataset/getUser'](state.user.uid) : null
+  path: (state, getters) =>{
+    const user = getters.localUser
+    return getters.logged ? createPathByRole(user.role) : '/'
+  },
+  localUser: (state, getters, rootState, rootGetters) => state.user.uid ? rootGetters['dataset/getUser'](state.user.uid) : null,
+  userIsLogin: (state, getters) =>{
+    const user = getters.localUser
+    return getters.logged ? user.role === Rol.User : false
+  },
+  adminIsLogin: (state, getters) =>{
+    const user = getters.localUser
+    return getters.logged ? user.role === Rol.Admin : false
+  },
+  superadminIsLogin: (state, getters) =>{
+    const user = getters.localUser
+    return getters.logged ? user.role === Rol.Superadmin : false
+  }
 }
 
 export const mutations = {

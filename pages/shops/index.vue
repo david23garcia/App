@@ -25,15 +25,9 @@
       </v-card-title>
       <v-data-table
         :headers="headers"
-        :items="getListShops()"
+        :items="items()"
       >
         <template v-slot:item.action="{ item }">
-          <v-icon
-            class="mr-2"
-            @click="editItem(item)"
-          >
-            mdi-account-edit
-          </v-icon>
           <v-icon v-if="!item.isBlocked"
                   @click="bloquedItem(item)"
           >
@@ -58,17 +52,13 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import { Collection, Rol } from '../../services/api'
+import { Collection } from '../../services/api'
 import ShopForm from '../../components/shopForm'
 
 export default {
   components: { ShopForm },
   data() {
     return {
-      shop: Collection.Shop,
-      user: Collection.User,
-      admin: Rol.Admin,
-      employee: Rol.Employee,
       title: 'Comercios',
       headers: [
         { text: 'Nombre', value: 'name' },
@@ -86,18 +76,15 @@ export default {
     ...mapGetters('session', ['role']),
   },
   mounted() {
-    this.listenCol(this.shop)
-    this.listenCol(this.user)
+    this.listenCol(Collection.Shop)
+    this.listenCol(Collection.User)
   },
   destroyed() {
-    this.unlistenCol(this.shop)
-    this.listenCol(this.user)
+    this.unlistenCol(Collection.shop)
+    this.listenCol(Collection.user)
   },
   methods: {
     ...mapActions('dataset', ['listenCol', 'unlistenCol', 'updateModel']),
-    editItem(item){
-      console.log(item)
-    },
     deleteItem(item){
       this.updateModel({ collection: Collection.Shop, data:  {
           isRemoved: true
@@ -113,17 +100,10 @@ export default {
           isBlocked: false
         }, id: item.id })
     },
-    getListShops() {
+    items() {
       return this.getListCol(this.shop).filter((item) => {
         return !((item.isBlocked === true) || (item.isRemoved === true))
       })
-      // console.log(data)
-      // return data.map((shop) => {
-      //   console.log(shop.userId)
-      //   const user = this.getUser(shop.userId)
-      //   console.log(user)
-      //   return { user: user.name + user.surname1 + user.surname2, ...shop }
-      // })
     }
   }
 }

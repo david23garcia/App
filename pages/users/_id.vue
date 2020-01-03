@@ -46,8 +46,8 @@
 </template>
 
 <script>
-  import { mapActions, mapGetters } from 'vuex'
-  import { Collection, Rol } from '../../services/api'
+import { mapActions, mapGetters } from 'vuex'
+import { Collection } from '../../services/api'
 
 export default {
   data () {
@@ -57,7 +57,7 @@ export default {
   },
   computed: {
     ...mapGetters('dataset', ['getListCol', 'getShop']),
-    ...mapGetters('session', ['localUser', 'logged'])
+    ...mapGetters('session', ['localUser', 'logged', 'adminIsLogin'])
   },
   mounted() {
     this.listenCol(Collection.Shop)
@@ -73,9 +73,6 @@ export default {
   methods: {
     ...mapActions('dataset', ['listenCol', 'unlistenCol', 'updateModel']),
     ...mapActions('session', ['initAuth', 'logout']),
-    adminIsLogin () {
-      return this.logged ? this.localUser.role === Rol.Admin : false
-    },
     items () {
       return this.getListCol(Collection.Article).filter((item) => {
         return !item.isRemoved && this.$route.params.id === item.shopId
@@ -106,7 +103,7 @@ export default {
       this.updateModel({ collection: Collection.User, data:  {
           isRemoved: true
         }, id: this.localUser.id })
-      if(this.adminIsLogin()){
+      if(this.adminIsLogin){
         this.updateModel({ collection: Collection.Shop, data:  {
             isRemoved: true
           }, id: this.$route.params.id })

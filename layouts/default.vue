@@ -8,11 +8,11 @@
       app
     >
       <v-list>
-        <v-subheader v-if="!logged || userIsLogin()" inset>COMERCIOS</v-subheader>
-        <v-subheader v-if="adminIsLogin()" inset>ADMINISTRADOR</v-subheader>
-        <v-subheader v-if="superAdminIsLogin()" inset>SUPERADMINISTRADOR</v-subheader>
+        <v-subheader v-if="!logged || userIsLogin" inset>COMERCIOS</v-subheader>
+        <v-subheader v-if="adminIsLogin" inset>ADMINISTRADOR</v-subheader>
+        <v-subheader v-if="superadminIsLogin" inset>SUPERADMINISTRADOR</v-subheader>
         <v-divider></v-divider>
-        <ul v-if="!logged || userIsLogin()">
+        <ul v-if="!logged || userIsLogin">
           <v-list-item
             v-for="(item, i) in items()"
             :key="i"
@@ -28,7 +28,7 @@
             </v-list-item-content>
           </v-list-item>
         </ul>
-        <v-list-item v-if="adminIsLogin() || superAdminIsLogin()"
+        <v-list-item v-if="adminIsLogin || superadminIsLogin"
                      :to="'/articles'"
                      router
                      exact
@@ -40,7 +40,7 @@
             <v-list-item-title>Artículos</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item v-if="superAdminIsLogin()"
+        <v-list-item v-if="superadminIsLogin"
                      :to="'/users'"
                      router
                      exact
@@ -52,7 +52,7 @@
             <v-list-item-title>Empleados</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item v-if="adminIsLogin() || userIsLogin()"
+        <v-list-item v-if="adminIsLogin || userIsLogin"
                      :to="'/orders'"
                      router
                      exact
@@ -64,7 +64,7 @@
             <v-list-item-title>Pedidos</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item v-if="superAdminIsLogin()"
+        <v-list-item v-if="superadminIsLogin"
                      :to="'/shops'"
                      router
                      exact
@@ -89,7 +89,7 @@
             <v-list-item-title>Login</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item v-if="logged && !adminIsLogin()"
+        <v-list-item v-if="logged && !adminIsLogin"
                      :to="'/users/'+uid"
                      router
                      exact
@@ -101,7 +101,7 @@
             <v-list-item-title>Perfil</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item v-if=" adminIsLogin()"
+        <v-list-item v-if=" adminIsLogin"
           :to="'/shops/'+localUser.shopId"
           router
           exact
@@ -113,7 +113,7 @@
             <v-list-item-title>Perfil Comercio</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item v-if="userIsLogin() || !logged"
+        <v-list-item v-if="userIsLogin || !logged"
                      :to="'/register'"
                      router
                      exact
@@ -160,7 +160,7 @@
       app
     >
       <v-app-bar-nav-icon @click.stop="drawer = !drawer" />
-      <v-btn icon :to=path()><v-icon>mdi-home</v-icon></v-btn>
+      <v-btn icon :to="path"><v-icon>mdi-home</v-icon></v-btn>
       <v-toolbar-title v-text="getTitle()" />
       <v-spacer />
       <v-menu
@@ -170,7 +170,7 @@
         left
       >
       </v-menu>
-      <v-menu v-if="userIsLogin()"
+      <v-menu v-if="userIsLogin"
         v-model="menu"
         :close-on-content-click="false"
         :nudge-width="500"
@@ -210,8 +210,7 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import basket from '../components/basket'
-import { Collection, Rol } from '../services/api'
-import { createPathByRole } from '../store/session'
+import { Collection } from '../services/api'
 export default {
   components: { basket },
   data () {
@@ -227,7 +226,7 @@ export default {
   },
   computed: {
     ...mapGetters('dataset', ['getTitle', 'getListCol', 'getListLogged', 'getListDefault']),
-    ...mapGetters('session', ['logged', 'localUser', 'uid'])
+    ...mapGetters('session', ['logged', 'localUser', 'uid', 'userIsLogin', 'adminIsLogin', 'superadminIsLogin', 'path'])
   },
   mounted() {
     this.listenCol(Collection.User)
@@ -244,19 +243,6 @@ export default {
     exit(){
       this.logout()
       window.location.href = '/'
-    },
-    path(){
-      return this.logged ? createPathByRole(this.localUser.role) : '/'
-    },
-    adminIsLogin(){
-      return this.logged ? this.localUser.role === Rol.Admin : false
-
-    },
-    superAdminIsLogin(){
-      return this.logged ? this.localUser.role === Rol.Superadmin : false
-    },
-    userIsLogin(){
-      return this.logged ? this.localUser.role === Rol.User : false
     },
     items() {
       return this.getListCol(Collection.Shop).filter(item => !(item.isBlocked || item.isRemoved))

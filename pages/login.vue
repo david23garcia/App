@@ -29,32 +29,33 @@
 
 import { mapActions, mapGetters } from 'vuex'
 import { Collection } from '../services/api'
+import { createPathByRole } from '../store/session'
 
 export default {
   data: () => ({
     email: '',
     password: ''
   }),
-  mounted() {
-    this.listenCol(Collection.User)
-    this.initAuth()
+  computed: {
+    ...mapGetters('session', ['logged', 'localUser']),
   },
-  destroyed() {
+  mounted () {
+    this.listenCol(Collection.User)
+  },
+  destroyed () {
     this.unlistenCol(Collection.User)
   },
-  computed: {
-    ...mapGetters('session', ['logged', 'role']),
-  },
   methods: {
-    ...mapActions('session', ['login', 'initAuth']),
+    ...mapActions('session', ['login', 'setRole', 'setPath']),
     ...mapActions('dataset', ['listenCol', 'unlistenCol']),
-    submit () {
-      this.login({ email: this.email, password: this.password }).then(function (path) {
-        // console.log(path)
-        // window.location.href = path
-      })
-      // console.log(path)
-      // window.location.href = "/"
+    async submit () {
+      await this.login({ email: this.email, password: this.password })
+      const localUser = this.localUser
+      const role = localUser.role
+      const path = createPathByRole(role)
+      await this.setRole(role)
+      await this.setPath(path)
+      window.location.href = path
     }
   }
 }

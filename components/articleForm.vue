@@ -2,9 +2,9 @@
   <form>
     <v-text-field
       v-model="name"
-      :error-messages="nameErrors"
+      :error-messages="titleErrors"
       :counter="10"
-      label="Nombre"
+      label="Titulo"
       required
       @input="$v.name.$touch()"
       @blur="$v.name.$touch()"
@@ -18,16 +18,16 @@
       @blur="$v.description.$touch()"
     ></v-text-field>
     <v-text-field
-      type="number"
       v-model="price"
+      type="number"
       :error-messages="priceErrors"
       label="Precio"
       @input="$v.price.$touch()"
       @blur="$v.price.$touch()"
     ></v-text-field>
     <v-text-field
-      type="number"
       v-model="quantity"
+      type="number"
       :error-messages="quantityErrors"
       label="Cantidad"
       @input="$v.quantity.$touch()"
@@ -40,6 +40,13 @@
       @input="$v.barcode.$touch()"
       @blur="$v.barcode.$touch()"
     ></v-text-field>
+<!--    <v-select v-if="superAdminIsLogin()"-->
+<!--              :items="items()"-->
+<!--              menu-props="auto"-->
+<!--              hide-details-->
+<!--              label="shop">-->
+<!--      single-line-->
+<!--    </v-select>-->
     <v-btn class="mr-4" @click="submit">Añadir</v-btn>
     <v-btn @click="clear">Cancelar</v-btn>
   </form>
@@ -49,27 +56,32 @@
 import minValue from 'vuelidate/src/validators/minValue'
 import maxLength from 'vuelidate/src/validators/maxLength'
 import minLength from 'vuelidate/src/validators/minLength'
+import required from 'vuelidate/src/validators/required'
+import { validationMixin } from 'vuelidate'
+import { mapActions, mapGetters } from 'vuex'
+import { Collection, Rol } from '../services/api'
 
 export default {
-  name: 'articleform',
+  name: 'ArticleForm',
   mixins: [validationMixin],
   validations: {
-    name: { required, maxLength: maxLength(10) },
-    description: { required, maxLength: maxLength(500), minLength: minLength(150) },
+    name: { required, maxLength: maxLength(100) },
+    description: { required, maxLength: maxLength(5000), minLength: minLength(150) },
     price: { required, minValue: minValue (0) },
     quantity: { required, minValue: minValue (0) },
     barcode: { maxLength: maxLength(15) }
   },
-
   data: () => ({
     name: '',
     description: '',
     price: 0,
     quantity: 0,
-    barcode: ''
+    barcode: '',
+    shop: null
   }),
-
   computed: {
+    ...mapGetters('session', ['logged', 'uid', 'email', 'phoneNumber', 'localUser']),
+    ...mapGetters('dataset', ['getUser', 'getListCol', 'getCountries', 'getProvinces']),
     nameErrors () {
       const errors = []
       if (!this.$v.name.$dirty) { return errors }
@@ -106,21 +118,46 @@ export default {
       !this.$v.barcode.required && errors.push('Codigo de Barras necesario.')
       return errors
     }
-
   },
-
+  mounted() {
+    this.listenCol(Collection.Shop)
+    this.listenCol(Collection.User)
+    this.initAuth()
+  },
+  destroyed() {
+    this.unlistenCol(Collection.Shop)
+    this.unlistenCol(Collection.User)
+  },
   methods: {
+    ...mapActions('dataset', ['updateModel', 'createModel', 'listenCol', 'unlistenCol', 'listenDoc', 'unlistenDoc']),
+    ...mapActions('session', ['initAuth']),
     submit () {
-      this.$v.$touch()
+      const article = {
+        title: this.name,
+        description: this.description,
+        price: this.price,
+        quantity: this.quantity,
+        barcode: this.barcode,
+        // shopId: this.superAdminIsLogin() ? this.shop.id : this.localUser.shopId,
+        shopId: this.localUser.shopId,
+        commentary: [],
+        assessment: [],
+        isRemoved: false
+      }
+
+      this.createModel({ collection: Collection.Article, data: article, id: btoa(this.name.concat(this.localUser.shopId)) })
+      this.$parent.isRegister = false
     },
     clear () {
-      this.$v.$reset()
-      this.name = ''
-      this.description = ''
-      this.price = ''
-      this.quantity = ''
-      this.barcode = ''
-    }
+      this.$parent.isRegister = false
+    },
+    superAdminIsLogin(){
+      const user = this.localUser
+      return this.logged && (user.role === Rol.Superadmin)
+    },
+    // items(){
+    //   this.getListCol(Collection.Shop).filter(item => !(item.isBlocked || item.isRemoved))
+    // },
   }
 }
 </script>

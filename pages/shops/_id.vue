@@ -1,51 +1,148 @@
 <template>
-  <v-card v-if="!this.isUserShop()" align="center" cols="10">
-    <v-toolbar-title>ESTAMOS DENTRO CON EL ID {{ typeof this.id !== 'undefined' ? this.id : 'unidefined' }}</v-toolbar-title>
-    <v-card align="center" cols="5">
-      <v-radio-group v-model="type" row align="center">
-        <v-radio label="Empleados" value="employee"></v-radio>
-        <v-radio label="Articulos" value="article"></v-radio>
-        <v-radio label="Pedidos" value="order"></v-radio>
-      </v-radio-group>
+  <v-row v-if="adminIsLogin() && !isUpdateShop && !isUpdateUser">
+    <v-card
+      class="mx-auto"
+      max-width="1000"
+      tile
+    >
+      <v-card-title>PERFIL DEL COMERCIO</v-card-title>
+      <v-img
+        height="100%"
+        src="https://cdn.vuetifyjs.com/images/cards/server-room.jpg"
+      >
+        <v-row
+          align="end"
+          class="fill-height"
+        >
+          <v-col
+            align-self="start"
+            class="pa-0"
+            cols="12"
+          >
+            <v-avatar
+              class="profile"
+              color="grey"
+              size="164"
+              tile
+            >
+              <v-img src="https://cdn.vuetifyjs.com/images/profiles/marcus.jpg"></v-img>
+            </v-avatar>
+          </v-col>
+          <v-col class="py-0">
+            <v-list-item
+              color="rgba(0, 0, 0, .4)"
+              dark
+            >
+              <v-list-item-content>
+                <v-list-item-title class="title">{{ shop().name }}</v-list-item-title>
+                <v-list-item-subtitle>Contacto: {{ contactInfo() }}</v-list-item-subtitle>
+                <v-list-item-subtitle>Dirección: {{ address() }}</v-list-item-subtitle>
+<!--                <v-list-item-subtitle>{{ shop().description }}</v-list-item-subtitle>-->
+              </v-list-item-content>
+            </v-list-item>
+            <p class="py-0" color="rgba(0, 0, 0, .4)"> {{ shop().description}}</p>
+          </v-col>
+        </v-row>
+      </v-img>
+      <v-row>
+        <v-btn text :id="$route.params.id" @click="isUpdateShop=true">Modificar</v-btn>
+        <v-btn text @click="remove()">Eliminar</v-btn>
+      </v-row>
     </v-card>
-    <v-card>
-      <listdefault
-        v-if="type === 'employee'"
-        :headers="headersUser"
-        :type="user"
-        :title="'Empleados'"
-      ></listdefault>
-      <listdefault
-        v-else-if="type === 'article'"
-        :headers="headersArticle"
-        :type="article"
-        :title="'Articulos'"
-      ></listdefault>
-      <listdefault
-        v-else-if="type === 'order'"
-        :headers="headersOrder"
-        :type="order"
-        :title="'Pedidos'"
-      ></listdefault>
+    <v-card
+      class="mx-auto"
+      max-width="1000"
+      tile
+    >
+      <v-card-title>PERFIL DEL PROPIETARIO</v-card-title>
+      <v-img
+        height="100%"
+        src="https://cdn.vuetifyjs.com/images/cards/server-room.jpg"
+      >
+        <v-row
+          align="end"
+          class="fill-height"
+        >
+          <v-col
+            align-self="start"
+            class="pa-0"
+            cols="12"
+          >
+            <v-avatar
+              class="profile"
+              color="grey"
+              size="164"
+              tile
+            >
+              <v-img src="https://cdn.vuetifyjs.com/images/profiles/marcus.jpg"></v-img>
+            </v-avatar>
+          </v-col>
+          <v-col class="py-0">
+            <v-list-item
+              color="rgba(0, 0, 0, .4)"
+              dark
+            >
+              <v-list-item-content>
+                <v-list-item-title class="title">{{ localUser.name+''+localUser.surname1+' '+localUser.surname2}}</v-list-item-title>
+                <v-list-item-subtitle>Contacto: {{ localUser.email+' / '+localUser.phone }}</v-list-item-subtitle>
+              </v-list-item-content>
+            </v-list-item>
+          </v-col>
+        </v-row>
+      </v-img>
+      <v-row>
+        <v-btn text :id="localUser.id" @click="isUpdateUser=true">Modificar</v-btn>
+        <v-btn text @click="remove()">Eliminar</v-btn>
+      </v-row>
     </v-card>
-  </v-card>
-  <v-card v-else>
-    <v-card-title>TONTITO QUE NO ES TU COMERCIO</v-card-title>
-  </v-card>
+  </v-row>
+  <v-col v-else-if="!isUpdateUser && !isUpdateShop">
+    <v-row>
+      <h1>{{ shop().name }}</h1>
+        <v-carousel>
+          <v-carousel-item
+            v-for="(item,i) in photo()"
+            :key="i"
+            :src="item.src"
+            reverse-transition="fade-transition"
+            transition="fade-transition"
+          ></v-carousel-item>
+        </v-carousel>
+      <v-spacer></v-spacer>
+      <v-row>{{ contactInfo() }}</v-row>
+      <v-row>Direccion: {{ address() }}</v-row>
+    </v-row>
+    <v-spacer></v-spacer>
+    <!--    <v-row justify="center" align="center">-->
+    <!--      <search />-->
+    <!--      <filters />-->
+    <!--    </v-row>-->
+    <v-row>
+      <article-card v-for="(item, i) in items()" :id="item.id" :key="i"></article-card>
+    </v-row>
+  </v-col>
+  <user-update-form v-else-if="isUpdateUser"></user-update-form>
+  <shop-update-form v-else-if="isUpdateShop"></shop-update-form>
+  <v-col v-else></v-col>
 </template>
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import { Collection } from '../../services/api'
-import Listdefault from '../../components/listdefault'
+import { Collection, Rol } from '../../services/api'
+import ArticleCard from '../../components/articleCard'
+import UserUpdateForm from '../../components/userUpdateForm'
+import ShopUpdateForm from '../../components/shopUpdateForm'
 
 export default {
-  name: "_id",
+  components: {
+    ShopUpdateForm,
+    UserUpdateForm,
+    ArticleCard,
+    // search,
+    // filters
+  },
   data () {
     return {
-      employee: Collection.User,
-      article: Collection.Article,
-      order: Collection.Order,
       headersUser: [
         { text: 'Nombre', value: 'name' },
         { text: 'Apellidos', value: 'surnames' },
@@ -65,39 +162,75 @@ export default {
         { number: 'Numero Articulos', value: 'articles' },
         { number: 'Direccion', value: 'address' },
         { text: 'Estado', value: 'state' }
-      ]
+      ],
+      isUpdateShop: false,
+      isUpdateUser: false
     }
   },
-  props: ['id'],
-  components: { Listdefault },
+  computed: {
+    ...mapGetters('dataset', ['getListCol', 'getShop']),
+    ...mapGetters('session', ['localUser', 'logged'])
+  },
   mounted() {
     this.listenCol(Collection.Shop)
     this.listenCol(Collection.User)
-    this.listenCol(Collection.Order)
     this.listenCol(Collection.Article)
-    this.listenDoc(Collection.Shop, this.id)
-    this.listenDoc(Collection.User, this.uid)
     this.initAuth()
   },
   destroyed() {
     this.unlistenCol(Collection.Shop)
     this.unlistenCol(Collection.User)
-    this.unlistenCol(Collection.Order)
     this.unlistenCol(Collection.Article)
-    this.unlistenDoc(Collection.Shop, this.id)
-    this.unlistenDoc(Collection.User, this.uid)
-  },
-  computed: {
-    ...mapGetters('dataset', ['getListCol', 'getShop', 'getUser']),
-    ...mapGetters('session', ['logged', 'uid'])
   },
   methods: {
-    ...mapActions('dataset', ['listenCol', 'unlistenCol', 'listenDoc', 'unlistenDoc']),
-    ...mapActions('session', ['initAuth']),
-    isUserShop(){
-      const user = this.getUser(this.uid)
-      const list = user.shopsId.filter((shopId) => { return shopId === this.id })
-      return list.isEmpty()
+    ...mapActions('dataset', ['listenCol', 'unlistenCol', 'updateModel']),
+    ...mapActions('session', ['initAuth', 'logout']),
+    adminIsLogin () {
+      return this.logged ? this.localUser.role === Rol.Admin : false
+    },
+    items () {
+      return this.getListCol(Collection.Article).filter((item) => {
+        return !item.isRemoved && this.$route.params.id === item.shopId
+      })
+    },
+    shop () {
+      return this.getShop(this.$route.params.id)
+    },
+    photo() {
+      return [
+        {
+          src: 'https://cdn.vuetifyjs.com/images/carousel/squirrel.jpg',
+        },
+        {
+          src: 'https://cdn.vuetifyjs.com/images/carousel/sky.jpg',
+        },
+        {
+          src: 'https://cdn.vuetifyjs.com/images/carousel/bird.jpg',
+        },
+        {
+          src: 'https://cdn.vuetifyjs.com/images/carousel/planet.jpg',
+        },
+      ]
+    },
+    address(){
+      const address = this.shop().address
+      return address.type+' '+address.street+' '+address.number+ ' '+address.floor+address.letter+'. '+address.city+
+        +', '+address.province+'. '+address.state+' ('+address.cv+')'
+    },
+    contactInfo(){
+      const shop = this.shop()
+      return 'Telefono: '+shop.phone+' Email: '+shop.email
+    },
+    remove(){
+      this.logout()
+      // inhabilitar cuenta del usuario para que no pueda volver a hacer login
+      this.updateModel({ collection: Collection.User, data:  {
+          isRemoved: true
+        }, id: this.localUser.id })
+      this.updateModel({ collection: Collection.Shop, data:  {
+          isRemoved: true
+        }, id: this.$route.params.id })
+      window.location.href='/'
     }
   }
 }

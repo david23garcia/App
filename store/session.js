@@ -1,30 +1,42 @@
 import { getAuth, getCurrentUser } from '../services/fireinit'
-import { Collection, Rol } from '../services/api'
+import { Rol } from '../services/api'
 
 export const state = () => ({
   user: {
     displayName: '',
     uid: null, // no null si está logueado
-    role : null,
     email: null,
     phoneNumber: null
   },
-  afterLogin: '/', // donde dirigirse una vez complete el login (si accedió y no tenía permiso)
-  listeningAuth: false
+  listeningAuth: false,
+  role: null,
+  path: null
 })
 
 export const getters = {
   logged: (state) => state.user.uid !== null,
-  role: (state) => state.user.role,
+  // role: (state, getters, rootState, rootGetters) => {
+  //   const localUser = rootGetters['dataset/getUser'](state.user.uid)
+  //   console.log(localUser)
+  //   return !localUser ? localUser.role : Rol.Anonymous
+  //   return Rol.User
+  // },
+  role: (state) => state.role,
   uid: (state) => state.user.uid,
   email: (state) => state.user.email,
   phoneNumber: (state) => state.user.phone,
-  path: (state) => state.afterLogin
+  // path: (state, dispatch, getters, rootState, rootGetters) => {
+  //   dispatch('dataset/listenCol', { kind: Collection.User }, { root:true })
+  //   const localUser = rootGetters['dataset/getUser'](state.user.uid)
+  //   console.log(localUser)
+  //   return createPathByRole(!localUser ? localUser.role : Rol.Anonymous)
+  // },
+  path: (state) => state.path,
+  localUser: (state, getters, rootState, rootGetters) => state.user.uid ? rootGetters['dataset/getUser'](state.user.uid) : null
 }
 
 export const mutations = {
   setUser(state, user) {
-    console.log("User dentro del set: ", user)
     if (user) {
       state.user.displayName = user.displayName
       state.user.uid = user.uid
@@ -45,6 +57,15 @@ export const mutations = {
   },
   setAfterLogin(state, payload) {
     state.afterLogin = payload
+  },
+  setEmail(state, email){
+    state.user.email = email
+  },
+  setRole(state, role){
+    state.role = role
+  },
+  setPath(state, path) {
+    state.path = path
   }
 }
 
@@ -53,26 +74,11 @@ export const actions = {
     if (!state.listeningAuth) {
       commit('setListeningAuth', true)
       const auth = await getAuth()
-      auth.onAuthStateChanged( user => {
-        dispatch('dataset/listenCol', Collection.User, { root:true })
-        dispatch('dataset/listenDoc', { kind: Collection.User, id: user.uid }, { root:true })
-        const localUser = rootGetters['dataset/getUser'](user.uid)
-        commit('setUser', { displayName: user.displayName, uid: user.uid, role: localUser.role, email: user.email, phone: user.phoneNumber })
-        const path = createPathByRole(localUser.role)
-        commit('setAfterLogin', path)
-      })
+      auth.onAuthStateChanged( user => commit('setUser', user))
       const user = await getCurrentUser() // Obtiene el usuario si no se cerrá sesión
       const prevUid = state.user.uid
       const newUid = user ? user.uid : null
-      if (prevUid !== newUid){
-        dispatch('dataset/listenCol', Collection.User, { root:true })
-        dispatch('dataset/listenDoc', newUid, { root:true })
-        const localUser = rootGetters['dataset/getUser'](newUid)
-        console.log("localUser: ", localUser)
-        commit('setUser', { displayName: user.displayName, uid: user.uid, role: localUser.role, email: user.email, phone: user.phoneNumber })
-        const path = createPathByRole(localUser.role)
-        commit('setAfterLogin', path)
-      }
+      if (prevUid !== newUid) commit('setUser', user)
     }
   },
   async setUser({ state, dispatch, commit }, user) {
@@ -83,35 +89,45 @@ export const actions = {
     }
   },
   async logout({ commit }) {
-    await commit('setUser', null)
-  },
-  async login( { commit, dispatch, rootGetters }, credentials){
     const auth = await getAuth()
-    auth.signInWithEmailAndPassword(credentials.email, credentials.password).then((user) =>{
-      console.log(user.user)
-      dispatch('dataset/listenCol', Collection.User, { root:true })
-      dispatch('dataset/listenDoc', { kind: Collection.User, id: user.user.uid }, { root:true })
-      const localUser = rootGetters['dataset/getUser'](user.user.uid)
-      // console.log(localUser)
-      commit('setUser', {  displayName: user.user.displayName === null ? '' : user.user.displayName,
-        uid: user.user.uid,
-        role : localUser.role,
-        email: user.user.email,
-        phoneNumber: user.user.phoneNumber === null ? '' : user.user.phoneNumber }, localUser)
-      const path = createPathByRole(localUser.role)
-      commit('setAfterLogin', path)
-      commit('setListeningAuth', true)
-      dispatch('dataset/unlistenCol', Collection.User, { root:true })
-      dispatch('dataset/unlistenDoc', { kind: Collection.User, id: user.user.uid }, { root:true })
-      return path
-    })
-  }
+    await auth.signOut()
+    commit('setUser', null)
+    // await commit('setRole', Rol.Anonymous)
+    // await commit('setPath', '/')
+  },
+  async login( { commit }, credentials){
+    const auth = await getAuth()
+    const user = await auth.signInWithEmailAndPassword(credentials.email, credentials.password)
+    await commit('setUser', user.user)
+  },
+  async ressetPassword( { commit, dispatch }, email ){
+    const auth = await getAuth()
+    return auth.sendPasswordResetEmail(email)
+  },
+  async setRole({ commit }, role){
+    await commit('setRole', role)
+  },
+  async setPath({ commit }, path){
+    await commit('setPath', path)
+  },
+  async registerUser({ state, commit, dispatch }, credentials) {
+    const auth = await getAuth()
+    const user = await auth.createUserWithEmailAndPassword(
+      credentials.email,
+      credentials.password
+    )
+    await auth.signOut()
+    return user
+  },
+  async sendVerificationEmail({ state, dispatch }) {
+    const auth = await getAuth()
+    await auth.currentUser.sendEmailVerification()
+    return true
+  },
 }
 
 export const createPathByRole  = (role) => {
   switch (role) {
-    case Rol.User:
-      return '/'
     case Rol.Superadmin:
       return '/users'
     case Rol.Employee:

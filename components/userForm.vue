@@ -4,7 +4,6 @@
     <span></span>
     <v-form >
       <v-text-field
-        cols="10"
         v-model="name"
         :error-messages="nameErrors"
         :counter="10"
@@ -44,16 +43,23 @@
       ></v-text-field>
       <v-text-field
         v-model="password"
+        type="password"
         :error-messages="passwordErrors"
         label="Contraseña"
         @input="$v.password.$touch()"
         @blur="$v.password.$touch()"
-        type="password"
       ></v-text-field>
+      <v-select v-if="superAdminIsLogin()"
+                :items="items()"
+                menu-props="auto"
+                hide-details
+                label="Rol">
+        single-line
+      </v-select>
       <span></span>
       <v-card align="center">
-        <v-btn class="mr-4" @click="submit" to="/">Registrarse</v-btn>
-        <v-btn to="/">Cancelar</v-btn>
+        <v-btn class="mr-4" @click="submit">Registrarse</v-btn>
+        <v-btn @click="this.$parent.isRegister=false">Cancelar</v-btn>
       </v-card>
       <span></span>
     </v-form>
@@ -65,10 +71,12 @@
 import { validationMixin } from 'vuelidate'
 import { required, maxLength } from 'vuelidate/lib/validators'
 import minLength from 'vuelidate/src/validators/minLength'
+import { mapActions, mapGetters } from 'vuex'
+import { Collection, Rol } from '../services/api'
 
 export default {
+  name: 'UserForm',
   mixins: [validationMixin],
-  name: 'userform',
   validations: {
     name: { required, maxLength: maxLength(10) },
     email: { required },
@@ -84,10 +92,12 @@ export default {
     surname2: '',
     email: '',
     phone: '',
-    password: ''
+    password: '',
+    role: ''
   }),
-
   computed: {
+    ...mapGetters('session', ['logged', 'uid', 'localUser']),
+    ...mapGetters('dataset', ['getUser', 'getListCol']),
     nameErrors () {
       const errors = []
       if (!this.$v.name.$dirty) { return errors }
@@ -130,19 +140,53 @@ export default {
       return errors
     }
   },
+  mounted() {
+    this.listenCol(Collection.User)
+    this.initAuth()
+  },
+  destroyed() {
+    this.unlistenCol(Collection.User)
+  },
   methods: {
-    submit () {
-      // let user = {}
-      // user = Object.assign(user, {
-      //   name: this.name,
-      //   surname1: this.surname1,
-      //   surname2: this.surname2,
-      //   email: this.email,
-      //   phone: this.phone,
-      //   password: this.password,
-      //   role: Rol.User
-      // })
-      // registerUser(user)
+    ...mapActions('dataset', ['updateModel', 'createModel', 'listenCol', 'unlistenCol', 'listenDoc', 'unlistenDoc']),
+    ...mapActions('session', ['initAuth', 'registerUser', 'setUser', 'login']),
+    async submit () {
+      let roleAux
+      if(this.superAdminIsLogin()) roleAux = this.role
+      else if(this.adminIsLogin()) roleAux = Rol.Employee
+      else roleAux = Rol.User
+      let user = {}
+      user = Object.assign(user, {
+        name: this.name,
+        surname1: this.surname1,
+        surname2: this.surname2,
+        email: this.email,
+        phone: this.phone,
+        role: roleAux,
+        isBlocked: false,
+        isRemoved: false,
+        shopId: null,
+        basketId: null,
+        address: [],
+        creditCard: []
+      })
+      const authUser = await this.registerUser({ email: this.email, password: this.password })
+      this.createModel({ collection: Collection.User, data: user, id: authUser.user.uid })
+      if(roleAux === Rol.User){
+        await this.login({email: this.email, password: this.password})
+        window.location.href='/'
+      } else {
+        this.$parent.isRegister = false
+      }
+    },
+    items(){
+      return [Rol.User, Rol.Admin, Rol.Employee]
+    },
+    superAdminIsLogin(){
+      return this.logged ? this.localUser.role === Rol.Superadmin : false
+    },
+    adminIsLogin(){
+      return this.logged ? this.localUser.role === Rol.Admin : false
     },
   }
 }

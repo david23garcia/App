@@ -82,6 +82,17 @@ export default {
     ** You can extend webpack config here
     */
     extend (config, ctx) {
-    }
+    },
+    babel: {
+      presets: [
+        [
+          '@nuxt/babel-preset-app',
+          {
+            useBuiltIns: 'entry',
+            corejs: 3
+          }
+        ]
+      ]
+    },
   }
 }

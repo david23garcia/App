@@ -25,6 +25,13 @@
         @input="$v.description.$touch()"
         @blur="$v.description.$touch()"
       ></v-text-field>
+      <v-select v-if="superAdminIsLogin()"
+      :items="items()"
+      menu-props="auto"
+      hide-details
+      label="user">
+      single-line
+      </v-select>
       <p>Dirección</p>
       <v-divider></v-divider>
       <v-row>
@@ -83,24 +90,24 @@
             @input="$v.city.$touch()"
             @blur="$v.city.$touch()"
           ></v-text-field>
+        <v-col cols="3">
+        <v-select
+          v-model="state"
+          :items="getCountries()"
+          menu-props="auto"
+          hide-details
+          label="Pais">
+        </v-select>
         </v-col>
         <v-col cols="3">
-          <v-text-field
+          <v-select v-if="state === 'España'"
             v-model="province"
-            label="Provincia"
-            :error-messages="provinceErrors"
-            @input="$v.province.$touch()"
-            @blur="$v.province.$touch()"
-          ></v-text-field>
+            :items="getProvinces()"
+            menu-props="auto"
+            hide-details
+            label="Provincia">
+          </v-select>
         </v-col>
-        <v-col cols="3">
-          <v-text-field
-            v-model="state"
-            label="Pais"
-            :error-messages="stateErrors"
-            @input="$v.state.$touch()"
-            @blur="$v.state.$touch()"
-          ></v-text-field>
         </v-col>
         <v-col cols="2">
           <v-text-field
@@ -128,8 +135,8 @@ import { mapActions, mapGetters } from 'vuex'
 import { Collection, Rol } from '../services/api'
 
 export default {
+  name: 'ShopForm',
   mixins: [validationMixin],
-  name: 'shopform',
   validations: {
     name: { required, maxLength: maxLength(10) },
     phone: { required, maxLength: maxLength(9) },
@@ -141,8 +148,6 @@ export default {
     floor: { required, maxLength: maxLength(3) },
     letter: { required, maxLength: maxLength(1) },
     city: { required, maxLength: maxLength(20) },
-    province: { required, maxLength: maxLength(15) },
-    state: { required, maxLength: maxLength(15) },
     cv: { required, maxLength: maxLength(5) }
 
   },
@@ -158,20 +163,12 @@ export default {
     city: '',
     province: '',
     state: '',
-    cv: ''
+    cv: '',
+    user: null
   }),
-  mounted() {
-    this.listenCol(Collection.User)
-    this.listenDoc(Collection.User, this.uid)
-    this.initAuth()
-  },
-  destroyed() {
-    this.unlistenCol(Collection.User)
-    this.unlistenDoc(Collection.User, this.uid)
-  },
   computed: {
-    ...mapGetters('session', ['logged', 'uid', 'email', 'phoneNumber', 'role']),
-    ...mapGetters('dataset', ['getUser']),
+    ...mapGetters('session', ['logged', 'uid', 'email', 'phoneNumber', 'localUser']),
+    ...mapGetters('dataset', ['getUser', 'getListCol', 'getCountries', 'getProvinces']),
     nameErrors () {
       const errors = []
       if (!this.$v.name.$dirty) { return errors }
@@ -235,20 +232,6 @@ export default {
       !this.$v.city.required && errors.push('surname is required.')
       return errors
     },
-    provinceErrors () {
-      const errors = []
-      if (!this.$v.province.$dirty) { return errors }
-      !this.$v.province.maxLength && errors.push('provincia incorrecto')
-      !this.$v.province.required && errors.push('surname is required.')
-      return errors
-    },
-    stateErrors () {
-      const errors = []
-      if (!this.$v.state.$dirty) { return errors }
-      !this.$v.state.maxLength && errors.push('pais incorrecto')
-      !this.$v.state.required && errors.push('surname is required.')
-      return errors
-    },
     cvErrors () {
       const errors = []
       if (!this.$v.cv.$dirty) { return errors }
@@ -257,19 +240,29 @@ export default {
       return errors
     }
   },
+  mounted() {
+    this.listenCol(Collection.User)
+    this.initAuth()
+  },
+  destroyed() {
+    this.unlistenCol(Collection.User)
+  },
   methods: {
     ...mapActions('dataset', ['updateModel', 'createModel', 'listenCol', 'unlistenCol', 'listenDoc', 'unlistenDoc']),
     ...mapActions('session', ['initAuth']),
     submit () {
-      const id = this.createShop()
-      this.updateUser(id)
+      const userId = this.superAdminIsLogin() ? this.user.id : this.uid
+      const shopId = this.createShop(userId)
+      this.updateUser(shopId, userId)
+      if(this.superAdminIsLogin()) this.$parent.isRegister = false
+      else window.location.href = '/articles'
     },
-    createShop() {
+    createShop(id) {
       const shop = {
-        userId: this.uid,
+        userId: id,
         name: this.name,
         email: this.email,
-        phone: [this.phone, typeof this.phoneNumber !== 'undefined' ? this.phoneNumber : ''],
+        phone: this.phone,
         description: this.description,
         address: {
           type: this.type,
@@ -286,18 +279,22 @@ export default {
         isBlocked: false,
         isRemoved: false
       }
-      const shopId = btoa(this.name.concat(this.uid))
+      const shopId = btoa(this.name.concat(id))
       this.createModel({ collection: Collection.Shop, data: shop, id: shopId })
       return shopId
     },
-    updateUser(shopId) {
-      const user = this.getUser(this.uid)
+    updateUser(id, userId) {
       this.updateModel({ collection: Collection.User, data:  {
           role: Rol.Admin,
-          shopsId: [shopId, ...user.shopsId]
-        }, id: this.uid })
-      // será necesario actualizar el user de session con el role o hacerlo de la forma que me diga el profe lo de los roles
-    }
+          shopId: id
+        }, id: userId })
+    },
+    items(){
+      this.getListCol(Collection.User).filter(item => !(item.isBlocked || item.isRemoved))
+    },
+    superAdminIsLogin(){
+      return this.logged ? this.localUser.role === Rol.Superadmin : false
+    },
   }
 }
 </script>

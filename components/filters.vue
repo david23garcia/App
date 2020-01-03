@@ -17,11 +17,11 @@
             <v-card>
               <v-card-title>Filtro</v-card-title>
               <v-divider></v-divider>
-              <orderby />
+              <order-by />
               <v-divider></v-divider>
               <category />
               <v-divider></v-divider>
-              <filterbyprice />
+              <filter-by-price />
               <v-divider></v-divider>
             </v-card>
     </v-menu>
@@ -29,15 +29,15 @@
 </template>
 
 <script>
-import orderby from '../components/orderby'
+import orderBy from './orderBy'
 import category from '../components/category'
-import filterbyprice from '../components/filterbyprice'
+import filterByPrice from './filterByPrice'
 export default {
-  name: 'filters',
+  name: 'Filters',
   components: {
-    orderby,
+    orderBy,
     category,
-    filterbyprice
+    filterByPrice
   }
 }
 </script>

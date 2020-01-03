@@ -16,6 +16,6 @@ export default {
     value: ['Destacados', 'Precio ↑', 'Precio ↓', 'A→Z', 'Z→A', 'Valoración'],
     active: false
   }),
-  name: 'orderby'
+  name: 'OrderBy'
 }
 </script>

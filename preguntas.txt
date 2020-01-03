@@ -31,3 +31,7 @@ https://materialdesignicons.com/
   //   return state.user
   // },
 
+          { text: 'Acciones', value: 'mdi-account-edit' },
+          { text: 'Bloquear', value: 'mdi-account-key' },
+          { text: 'Eliminar', value: 'mdi-account-minus' },
+

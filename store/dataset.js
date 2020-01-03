@@ -92,8 +92,8 @@ export const state = () => ({
     },
     {
       title: 'Perfil',
-      to: '/admin'
-    }
+    to: '/admin'
+}
   ],
   listUserLogout: [
     {
@@ -105,8 +105,113 @@ export const state = () => ({
       to: '/register'
     }
   ],
-  isLogin: false,
-  roleUser: null
+  countries : [
+    'Alemania',
+    'Andorra',
+    'Argentina',
+    'Austria',
+    'Azerbaiyán',
+    'Bélgica',
+    'Bosnia y Herzegovina',
+    'Brasil',
+    'Bulgaria',
+    'Canadá',
+    'Chile',
+    'China',
+    'Chipre',
+    'Colombia',
+    'Croacia',
+    'Dinamarca',
+    'Ecuador',
+    'Eslovaquia',
+    'Eslovenia',
+    'España',
+    'Estados Unidos',
+    'Estonia',
+    'Etiopía',
+    'Finlandia',
+    'Francia',
+    'Grecia',
+    'Hungría',
+    'Irlanda',
+    'Islandia',
+    'Israel',
+    'Italia',
+    'Jamaica',
+    'Japón',
+    'Letonia',
+    'Lituania',
+    'Marruecos',
+    'México',
+    'Noruega',
+    'Países Bajos',
+    'Polonia',
+    'Portugal',
+    'Gran Bretaña',
+    'República Checa',
+    'Rumanía',
+    'Rusia',
+    'Serbia',
+    'Suecia',
+    'Suiza',
+    'Túnez',
+    'Turquía',
+    'Ucrania'
+  ],
+  provinces: [
+    'A Coruña',
+    'Álava',
+    'Albacete',
+    'Alicante',
+    'Almería',
+    'Asturias',
+    'Ávila',
+    'Badajoz',
+    'Baleares',
+    'Barcelona',
+    'Burgos',
+    'Cáceres',
+    'Cádiz',
+    'Cantabria',
+    'Castellón',
+    'Ciudad Real',
+    'Córdoba',
+    'Cuenca',
+    'Girona',
+    'Granada',
+    'Guadalajara',
+    'Gipuzkoa',
+    'Huelva',
+    'Huesca',
+    'Jaén',
+    'La Rioja',
+    'Las Palmas',
+    'León',
+    'Lérida',
+    'Lugo',
+    'Madrid',
+    'Málaga',
+    'Murcia',
+    'Navarra',
+    'Ourense',
+    'Palencia',
+    'Pontevedra',
+    'Salamanca',
+    'Segovia',
+    'Sevilla',
+    'Soria',
+    'Tarragona',
+    'Santa Cruz de Tenerife',
+    'Teruel',
+    'Toledo',
+    'Valencia',
+    'Valladolid',
+    'Vizcaya',
+    'Zamora',
+    'Zaragoza',
+    'Ceuta',
+    'Melilla'
+  ]
 })
 
 export const getters = {
@@ -128,11 +233,14 @@ export const getters = {
       return null
     }
   },
-  getUser : (state, getters, rootState, rootGetters) => (id) => {
+  getUser : (state, getters) => (id) => {
     return  getters.getDoc({ kind: Collection.User, id })
   },
   getShop : (state, getters) => (id) => {
     return getters.getDoc( {kind: Collection.Shop, id})
+  },
+  getArticle : (state, getters) => (id) => {
+    return getters.getDoc({kind: Collection.Article, id})
   },
   getListCol: state => kind => {
     const data = state.data.col[kind]
@@ -145,19 +253,23 @@ export const getters = {
     const col = keys.map(id => ({ id, ...data[id] }))
     return col.filter(id => id === idDoc)
   },
-  getListUser: state => () => {
-    // if(state.isLogin) {
-    //   return state.listUserLogin
-    // } else {
-    //   return state.listUserLogout
-    // }
-    return state.listUserLogout.concat(state.listUserLogin)
-  },
   getTitle: state => () => {
     return state.title
   },
+  getListLogged: state => () => {
+    return state.listUserLogin
+  },
+  getListDefault: state => () => {
+    return state.listUserLogout
+  },
   getRootGetter: (state, getters, rootState, rootGetters) => {
     return state.getters ? rootGetters['dataset/getters'](this.getters): null
+  },
+  getCountries: state => () => {
+    return state.countries
+  },
+  getProvinces: state => () => {
+    return state.provinces
   }
 
 }

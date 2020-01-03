@@ -24,7 +24,8 @@ export const Rol = {
   Admin: 'admin',
   Superadmin: 'superadmin',
   User: 'user',
-  Employee: 'employee'
+  Employee: 'employee',
+  Anonymous: 'anonymous'
 }
 
 export const Group = {

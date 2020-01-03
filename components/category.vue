@@ -16,7 +16,7 @@ export default {
     value: ['Textil', 'Deportes', 'Calzado', 'Multimedia', 'Electronica', 'Electrodomesticos'],
     active: false
   }),
-  name: 'category'
+  name: 'Category'
 
 }
 </script>

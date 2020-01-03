@@ -1,81 +1,168 @@
 <template>
   <v-card>
-    <v-list>
-      <v-list-item
-        v-for="(item, i) in items"
-        :key="i"
-        router
-        exact
-      >
-        <v-list-item-content>
-          <v-row>
-            <v-col>
-              {{ item.quantity }}
-            </v-col>
-            <v-col>
-              {{ item.name }}
-            </v-col>
-            <v-col>
-              {{ calculatePartialPrice( item.price, item.quantity ) }}
-            </v-col>
-          </v-row>
-        </v-list-item-content>
-      </v-list-item>
-    </v-list>
-    <v-row>
-      <v-col>
-        <v-btn>
-          PAGAR
-        </v-btn>
-      </v-col>
-      <v-col>
-        Precio Total: {{ totalPrice }} €
-      </v-col>
-    </v-row>
+    <v-data-table v-if="items().length !== 0"
+      :headers="headers"
+      :items="items()"
+      hide-default-footer
+      class="elevation-1"
+    >
+      <template v-slot:item.action="{ item }">
+        <v-icon
+          class="mr-2"
+          @click="plusQuantity(item.articleId)"
+        >
+          mdi-plus
+        </v-icon>
+        <v-icon
+          @click="minusQuantity(item.articleId)"
+        >
+          mdi-minus
+        </v-icon>
+        <v-icon
+          @click="deleteArticle(item.articleId)"
+        >
+          mdi-delete
+        </v-icon>
+      </template>
+    </v-data-table>
+    <v-card-title v-if="items().length !== 0">Precio Total: {{ totalPrice }}</v-card-title>
+      <v-btn v-if="items().length !== 0" text icon @click="buy()"><v-icon>mdi-credit-card</v-icon>Pagar</v-btn>
   </v-card>
 </template>
 
 <script>
+  import { mapActions, mapGetters } from 'vuex'
+import { Collection } from '../services/api'
+
 export default {
+  name: 'Basket',
   data: () => ({
-    items: [
-      {
-        name: 'articulo A',
-        price: 2.05,
-        quantity: 5
-      },
-      {
-        name: 'articulo B',
-        price: 15.9,
-        quantity: 1
-      },
-      {
-        name: 'articulo C',
-        price: 20,
-        quantity: 1
-      },
-      {
-        name: 'articulo D',
-        price: 5.5,
-        quantity: 1
-      },
-      {
-        name: 'articulo E',
-        price: 1,
-        quantity: 10
-      }
+    headers: [
+      { text: 'Cantidad', value: 'quantity' },
+      { text: 'Nombre Artículo', value: 'title' },
+      { text: 'Precio', value: 'price' },
+      { text: 'Acciones', value: 'action', sortable: false },
     ],
     totalPrice: 0
   }),
-  name: 'basket',
+  computed: {
+    ...mapGetters('dataset', ['getArticle', 'getUser', 'getArticle']),
+    ...mapGetters('session', ['localUser', 'logged', 'uid'])
+  },
+  mounted() {
+    this.listenCol(Collection.User)
+    this.listenCol(Collection.Shop)
+    this.listenCol(Collection.Article)
+    this.initAuth()
+  },
+  destroyed() {
+    this.unlistenCol(Collection.User)
+    this.unlistenCol(Collection.Shop)
+    this.unlistenCol(Collection.Article)
+  },
   methods: {
-    calculatePartialPrice (price, quantity) {
-      const partialPrice = price * quantity
-      this.totalPrice += partialPrice
-      return partialPrice
+    ...mapActions('dataset', ['listenCol', 'unlistenCol', 'updateModel', 'createModel']),
+    ...mapActions('session', ['initAuth']),
+    items () {
+      let totalPrice = 0
+      const items =  this.getUser(this.uid).basket.map((item) => {
+        const article = this.getArticle(item.articleId)
+        totalPrice = totalPrice + item.quantity*article.price
+        return  {quantity: item.quantity, title: article.title, price: (item.quantity*article.price).toFixed(2) +' €', articleId: item.articleId}
+      })
+      this.totalPrice = totalPrice.toFixed(2)
+      return items
+    },
+    plusQuantity (id) {
+      const basket = this.getUser(this.uid).basket
+      this.updateModel({
+        collection: Collection.User, data: {
+          basket: basket.map((item) => {
+            if(id === item.articleId) return { quantity: item.quantity+1, articleId: item.articleId }
+            else return item
+          })
+        }, id: this.uid
+      })
+    },
+    minusQuantity (id) {
+      const basket = this.getUser(this.uid).basket
+      this.updateModel({
+        collection: Collection.User, data: {
+          basket: basket.map((item) => {
+            if(id === item.articleId && item.quantity > 1) return { quantity: item.quantity-1, articleId: item.articleId }
+            else return item
+          })
+        }, id: this.uid
+      })
+    },
+    deleteArticle (id) {
+      const basket = this.getUser(this.uid).basket
+      this.updateModel({
+        collection: Collection.User, data: {
+          basket: basket.filter((item) => {
+            return item.articleId !== id
+          })
+        }, id: this.uid
+      })
+    },
+    buy(){
+      const user = this.getUser(this.uid)
+      this.createOrders(user).map((order) => {
+        this.createModel({ collection: Collection.Order, data: order, id: null })
+      })
+      this.updateModel({
+        collection: Collection.User, data: {
+          basket: []
+        }, id: this.uid
+      })
+    },
+    updateQuantityArticle(item){
+      const article = this.getArticle(item.articleId)
+      this.updateModel({
+        collection: Collection.Article, data: {
+          quantity: article.quantity - item.quantity
+        }, id: item.articleId
+      })
+    },
+    createOrders(user) {
+      const orders = []
+      for(const item of user.basket){
+        const article = this.getArticle(item.articleId)
+        this.updateQuantityArticle(item)
+        if(orders.length === 0) {
+          orders.push({
+            shopId: article.shopId,
+            userId: this.uid,
+            items: [item],
+            totalPrice: item.quantity*article.price,
+            status: 'PENDING',
+            address: null,
+            creditCard: null,
+            shippingMethod: null
+          })
+        }else {
+          for(const order of orders){
+            if(article.shopId === order.shopId){
+              order.items.push(item)
+              order.totalPrice = order.totalPrice + item.quantity*article.price
+            } else {
+              orders.push({
+                shopId: article.shopId,
+                userId: this.uid,
+                items: [item],
+                totalPrice: item.quantity*article.price,
+                status: 'PENDING',
+                address: null,
+                creditCard: null,
+                shippingMethod: null
+              })
+            }
+          }
+        }
+      }
+      return orders
     }
   }
-
 }
 </script>
 

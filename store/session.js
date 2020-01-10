@@ -139,6 +139,10 @@ export const actions = {
     await auth.currentUser.sendEmailVerification()
     return true
   },
+  async disableUser({state}){
+    const user = await getCurrentUser()
+    return user.disable()
+  }
 }
 
 export const createPathByRole  = (role) => {

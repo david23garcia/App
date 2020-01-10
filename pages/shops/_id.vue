@@ -1,125 +1,27 @@
 <template>
   <v-row v-if="adminIsLogin && !isUpdateShop && !isUpdateUser">
-    <v-card
-      class="mx-auto"
-      max-width="1000"
-      tile
-    >
-      <v-card-title>PERFIL DEL COMERCIO</v-card-title>
-      <v-img
-        height="100%"
-        src="https://cdn.vuetifyjs.com/images/cards/server-room.jpg"
-      >
-        <v-row
-          align="end"
-          class="fill-height"
-        >
-          <v-col
-            align-self="start"
-            class="pa-0"
-            cols="12"
-          >
-            <v-avatar
-              class="profile"
-              color="grey"
-              size="164"
-              tile
-            >
-              <v-img src="https://cdn.vuetifyjs.com/images/profiles/marcus.jpg"></v-img>
-            </v-avatar>
-          </v-col>
-          <v-col class="py-0">
-            <v-list-item
-              color="rgba(0, 0, 0, .4)"
-              dark
-            >
-              <v-list-item-content>
-                <v-list-item-title class="title">{{ shop().name }}</v-list-item-title>
-                <v-list-item-subtitle>Contacto: {{ contactInfo() }}</v-list-item-subtitle>
-                <v-list-item-subtitle>Dirección: {{ address() }}</v-list-item-subtitle>
-<!--                <v-list-item-subtitle>{{ shop().description }}</v-list-item-subtitle>-->
-              </v-list-item-content>
-            </v-list-item>
-            <p class="py-0" color="rgba(0, 0, 0, .4)"> {{ shop().description}}</p>
-          </v-col>
-        </v-row>
-      </v-img>
-      <v-row>
-        <v-btn :id="$route.params.id" text @click="isUpdateShop=true">Modificar</v-btn>
-        <v-btn text @click="remove()">Eliminar</v-btn>
-      </v-row>
-    </v-card>
-    <v-card
-      class="mx-auto"
-      max-width="1000"
-      tile
-    >
-      <v-card-title>PERFIL DEL PROPIETARIO</v-card-title>
-      <v-img
-        height="100%"
-        src="https://cdn.vuetifyjs.com/images/cards/server-room.jpg"
-      >
-        <v-row
-          align="end"
-          class="fill-height"
-        >
-          <v-col
-            align-self="start"
-            class="pa-0"
-            cols="12"
-          >
-            <v-avatar
-              class="profile"
-              color="grey"
-              size="164"
-              tile
-            >
-              <v-img src="https://cdn.vuetifyjs.com/images/profiles/marcus.jpg"></v-img>
-            </v-avatar>
-          </v-col>
-          <v-col class="py-0">
-            <v-list-item
-              color="rgba(0, 0, 0, .4)"
-              dark
-            >
-              <v-list-item-content>
-                <v-list-item-title class="title">{{ localUser.name+''+localUser.surname1+' '+localUser.surname2}}</v-list-item-title>
-                <v-list-item-subtitle>Contacto: {{ localUser.email+' / '+localUser.phone }}</v-list-item-subtitle>
-              </v-list-item-content>
-            </v-list-item>
-          </v-col>
-        </v-row>
-      </v-img>
-      <v-row>
-        <v-btn :id="localUser.id" text @click="isUpdateUser=true">Modificar</v-btn>
-        <v-btn text @click="remove()">Eliminar</v-btn>
-      </v-row>
-    </v-card>
+    <shop-profile :id="this.$route.params.id"></shop-profile>
+    <user-profile :id="uid"></user-profile>
   </v-row>
   <v-col v-else-if="!isUpdateUser && !isUpdateShop">
-    <v-row>
-      <h1>{{ shop().name }}</h1>
-        <v-carousel>
-          <v-carousel-item
-            v-for="(item,i) in photo()"
-            :key="i"
-            :src="item.src"
-            reverse-transition="fade-transition"
-            transition="fade-transition"
-          ></v-carousel-item>
-        </v-carousel>
-      <v-spacer></v-spacer>
-      <v-row>{{ contactInfo() }}</v-row>
-      <v-row>Direccion: {{ address() }}</v-row>
-    </v-row>
-    <v-spacer></v-spacer>
-    <!--    <v-row justify="center" align="center">-->
-    <!--      <search />-->
-    <!--      <filters />-->
-    <!--    </v-row>-->
-    <v-row>
-      <article-card v-for="(item, i) in items()" :id="item.id" :key="i"></article-card>
-    </v-row>
+    <br/>
+    <h1>{{ shop().name }}</h1>
+    <br/>
+    <v-carousel>
+      <v-carousel-item
+        v-for="(item,i) in photo()"
+        :key="i"
+        :src="item.src"
+        reverse-transition="fade-transition"
+        transition="fade-transition"
+      ></v-carousel-item>
+    </v-carousel>
+    <br/>
+    {{ contactInfo() }}
+    <br>
+    Direccion: {{ address() }}
+    <br/>
+    <articles-view :id="this.$route.params.id"></articles-view>
   </v-col>
   <user-update-form v-else-if="isUpdateUser"></user-update-form>
   <shop-update-form v-else-if="isUpdateShop"></shop-update-form>
@@ -129,47 +31,29 @@
 <script>
 import { mapActions, mapGetters } from 'vuex'
 import { Collection } from '../../services/api'
-import ArticleCard from '../../components/articleCard'
 import UserUpdateForm from '../../components/userUpdateForm'
 import ShopUpdateForm from '../../components/shopUpdateForm'
+import ArticlesView from '../../components/articlesView'
+import ShopProfile from '../../components/shopProfile'
+import UserProfile from '../../components/userProfile'
 
 export default {
   components: {
+    UserProfile,
+    ShopProfile,
+    ArticlesView,
     ShopUpdateForm,
-    UserUpdateForm,
-    ArticleCard,
-    // search,
-    // filters
+    UserUpdateForm
   },
   data () {
     return {
-      headersUser: [
-        { text: 'Nombre', value: 'name' },
-        { text: 'Apellidos', value: 'surnames' },
-        { text: 'Email', value: 'email' },
-        { text: 'Telefono', value: 'phone' }
-      ],
-      headersArticle: [
-        { text: 'Codigo de Barras', value: 'barcode' },
-        { text: 'Nombre', value: 'title' },
-        { text: 'Cantidad', value: 'quantity' },
-        { text: 'Precio', value: 'price' }
-      ],
-      headersOrder: [
-        { text: 'Id', value: 'id' },
-        { text: 'Usuario', value: 'userId' },
-        { text: 'Precio', value: 'price' },
-        { number: 'Numero Articulos', value: 'articles' },
-        { number: 'Direccion', value: 'address' },
-        { text: 'Estado', value: 'state' }
-      ],
       isUpdateShop: false,
       isUpdateUser: false
     }
   },
   computed: {
     ...mapGetters('dataset', ['getListCol', 'getShop']),
-    ...mapGetters('session', ['localUser', 'logged', 'adminIsLogin'])
+    ...mapGetters('session', ['localUser', 'logged', 'adminIsLogin', 'uid'])
   },
   mounted() {
     this.listenCol(Collection.Shop)
@@ -185,14 +69,6 @@ export default {
   methods: {
     ...mapActions('dataset', ['listenCol', 'unlistenCol', 'updateModel']),
     ...mapActions('session', ['initAuth', 'logout']),
-    items () {
-      return this.getListCol(Collection.Article).filter((item) => {
-        return !item.isRemoved && this.$route.params.id === item.shopId
-      })
-    },
-    shop () {
-      return this.getShop(this.$route.params.id)
-    },
     photo() {
       return [
         {
@@ -218,17 +94,9 @@ export default {
       const shop = this.shop()
       return 'Telefono: '+shop.phone+' Email: '+shop.email
     },
-    remove(){
-      this.logout()
-      // inhabilitar cuenta del usuario para que no pueda volver a hacer login
-      this.updateModel({ collection: Collection.User, data:  {
-          isRemoved: true
-        }, id: this.localUser.id })
-      this.updateModel({ collection: Collection.Shop, data:  {
-          isRemoved: true
-        }, id: this.$route.params.id })
-      window.location.href='/'
-    }
+    shop () {
+      return this.getShop(this.$route.params.id)
+    },
   }
 }
 </script>

@@ -19,7 +19,7 @@
 <!--      ></v-text-field>-->
       <v-card align="center">
         <v-btn class="mr-4" @click="submit">Modificar</v-btn>
-        <v-btn @click="this.$parent.isUpdateUser=false">Cancelar</v-btn>
+        <v-btn @click="this.$parent.isUpdate=false">Cancelar</v-btn>
       </v-card>
       <span></span>
     </v-form>

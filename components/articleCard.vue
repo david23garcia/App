@@ -45,8 +45,6 @@
         </v-card-text>
       </div>
     </v-expand-transition>
-    <v-spacer></v-spacer>
-    <v-spacer></v-spacer>
   </v-card>
 </template>
 

@@ -87,7 +87,7 @@
       </v-row>
       <v-card align="center">
         <v-btn class="mr-4" @click="submit">Modificar</v-btn>
-        <v-btn @click="this.$parent.isUpdateShop=false">Cancelar</v-btn>
+        <v-btn @click="this.$parent.isUpdate=false">Cancelar</v-btn>
       </v-card>
     </v-form>
   </v-card>
@@ -211,6 +211,7 @@ export default {
           state: this.state ? this.state : shop.state,
           cv: this.cv ? this.cv : shop.cv
         }, id: this.id })
+      this.$parent.isUpdateShop = false
     }
   }
 }

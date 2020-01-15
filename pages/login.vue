@@ -55,7 +55,7 @@ export default {
       const path = createPathByRole(role)
       await this.setRole(role)
       await this.setPath(path)
-      window.location.href = path
+      this.$router.replace(path)
     }
   }
 }

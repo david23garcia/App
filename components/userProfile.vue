@@ -88,7 +88,7 @@ export default {
             isRemoved: true
           }, id: this.$route.params.id })
       }
-      window.location.href='/'
+      this.$router.replace('/')
     }
   }
 }

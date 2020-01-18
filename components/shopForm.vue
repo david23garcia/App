@@ -255,7 +255,7 @@ export default {
       const shopId = this.createShop(userId)
       this.updateUser(shopId, userId)
       if(this.superAdminIsLogin()) this.$parent.isRegister = false
-      else window.location.href = '/articles'
+      this.$router.replace('/articles')
     },
     createShop(id) {
       const shop = {

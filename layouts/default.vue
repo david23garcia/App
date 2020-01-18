@@ -242,7 +242,7 @@ export default {
     ...mapActions('session', ['logout', 'initAuth']),
     exit(){
       this.logout()
-      window.location.href = '/'
+      this.$router.replace('/')
     },
     items() {
       return this.getListCol(Collection.Shop).filter(item => !(item.isBlocked || item.isRemoved))

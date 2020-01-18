@@ -37,7 +37,7 @@ export default {
     password: ''
   }),
   computed: {
-    ...mapGetters('session', ['logged', 'localUser']),
+    ...mapGetters('session', ['logged', 'localUser', 'path']),
   },
   mounted () {
     this.listenCol(Collection.User)
@@ -50,12 +50,7 @@ export default {
     ...mapActions('dataset', ['listenCol', 'unlistenCol']),
     async submit () {
       await this.login({ email: this.email, password: this.password })
-      const localUser = this.localUser
-      const role = localUser.role
-      const path = createPathByRole(role)
-      await this.setRole(role)
-      await this.setPath(path)
-      this.$router.replace(path)
+      this.$router.replace(this.path)
     }
   }
 }

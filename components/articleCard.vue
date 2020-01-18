@@ -100,7 +100,7 @@ export default {
       }
     },
     moreInfo(){
-      window.location.href='articles/'+this.id
+      this.$router.replace('articles/'+this.id)
     }
   }
 }

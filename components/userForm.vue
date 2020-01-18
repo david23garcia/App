@@ -174,7 +174,7 @@ export default {
       this.createModel({ collection: Collection.User, data: user, id: authUser.user.uid })
       if(roleAux === Rol.User){
         await this.login({email: this.email, password: this.password})
-        window.location.href='/'
+        this.$router.replace('/')
       } else {
         this.$parent.isRegister = false
       }

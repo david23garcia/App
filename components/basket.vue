@@ -26,7 +26,7 @@
       </template>
     </v-data-table>
     <v-card-title v-if="items().length !== 0">Precio Total: {{ totalPrice }}</v-card-title>
-      <v-btn v-if="items().length !== 0" text icon @click="buy()"><v-icon>mdi-credit-card</v-icon>Pagar</v-btn>
+      <v-btn v-if="items().length !== 0" text icon @click="this.buy"><v-icon>mdi-credit-card</v-icon>Pagar</v-btn>
   </v-card>
 </template>
 
@@ -61,7 +61,7 @@ export default {
     this.unlistenCol(Collection.Article)
   },
   methods: {
-    ...mapActions('dataset', ['listenCol', 'unlistenCol', 'updateModel', 'createModel']),
+    ...mapActions('dataset', ['listenCol', 'unlistenCol', 'updateModel', 'createModel', 'buy']),
     ...mapActions('session', ['initAuth']),
     items () {
       let totalPrice = 0
@@ -105,63 +105,6 @@ export default {
         }, id: this.uid
       })
     },
-    buy(){
-      const user = this.getUser(this.uid)
-      this.createOrders(user).map((order) => {
-        this.createModel({ collection: Collection.Order, data: order, id: null })
-      })
-      this.updateModel({
-        collection: Collection.User, data: {
-          basket: []
-        }, id: this.uid
-      })
-    },
-    updateQuantityArticle(item){
-      const article = this.getArticle(item.articleId)
-      this.updateModel({
-        collection: Collection.Article, data: {
-          quantity: article.quantity - item.quantity
-        }, id: item.articleId
-      })
-    },
-    createOrders(user) {
-      const orders = []
-      for(const item of user.basket){
-        const article = this.getArticle(item.articleId)
-        this.updateQuantityArticle(item)
-        if(orders.length === 0) {
-          orders.push({
-            shopId: article.shopId,
-            userId: this.uid,
-            items: [item],
-            totalPrice: item.quantity*article.price,
-            status: 'PENDING',
-            address: null,
-            creditCard: null,
-            shippingMethod: null
-          })
-        }else {
-          for(const order of orders){
-            if(article.shopId === order.shopId){
-              order.items.push(item)
-              order.totalPrice = order.totalPrice + item.quantity*article.price
-            } else {
-              orders.push({
-                shopId: article.shopId,
-                userId: this.uid,
-                items: [item],
-                totalPrice: item.quantity*article.price,
-                status: 'PENDING',
-                address: null,
-                creditCard: null,
-                shippingMethod: null
-              })
-            }
-          }
-        }
-      }
-      return orders
-    }
   }
 }
 </script>

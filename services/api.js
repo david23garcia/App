@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { getEndPoint, getDB, getServerTimeStamp } from '~/services/fireinit'
+import { getEndPoint, getDB, getServerTimeStamp, getAuth } from '~/services/fireinit'
 
 export const UIActions = {
   ChooseModelDirectly: 'chooseModelDirectly'
@@ -138,17 +138,6 @@ export const addDocumentByUid = async function (kind, field, uid) {
   return db.collection(kind).doc(uid).set(field)
 }
 
-// export const registerUser = async function (data) {
-//   console.log('quiero registrar a un usuario')
-//   const fb = await getAuth()
-//   return fb.createUserWithEmailAndPassword( data.email , data.password).then(function (user) {
-//     return updateDocument(Collection.User, data, user.user.uid)
-//   }).catch(function (error) {
-//     console.log("ha ido ko el error")
-//     console.log(error.message)
-//   })
-// }
-
 export const updateDocument = async function (collection, id, data){
   const db = await getDB()
   db.collection(collection).doc(id).set(data, {merge: true})
@@ -158,4 +147,31 @@ export const addDocumentById = async function (collection, id, data){
   const db = await getDB()
   db.collection(collection).doc(id).set(data)
 }
+
+export const pay = async function (id, price){
+  try {
+    const endPoint = await getEndPoint()
+    const result = await endPoint.pay({orderId: id, price})
+    return result.data
+  } catch (e) {
+    return {status: false, id: ''}
+  }
+}
+
+export const registerUser = async function (email, password) {
+  const auth = await getAuth()
+  return auth.createUserWithEmailAndPassword(email, password)
+}
+
+export const registerUserByBackend = async function (email, password) {
+  const endPoint = await getEndPoint()
+  return endPoint.createUser({email, password})
+}
+
+export const disableUser = async function (id) {
+  const endPoint = await getEndPoint()
+  return endPoint.disableUser({id})
+}
+
+
 

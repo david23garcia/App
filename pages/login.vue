@@ -5,8 +5,12 @@
       <v-form>
         <v-text-field
           v-model="email"
-          label="Email"
+          :error-messages="emailErrors"
           prepend-icon="mdi-account"
+          label="Email"
+          required
+          @input="$v.email.$touch()"
+          @blur="$v.email.$touch()"
         ></v-text-field>
         <v-text-field
           v-model="password"
@@ -15,6 +19,7 @@
           type="password"
         ></v-text-field>
       </v-form>
+      <p v-if="hasError">Usuario o contraseña incorrectos</p>
     </v-card-text>
     <v-card-actions>
       <v-spacer></v-spacer>
@@ -25,32 +30,41 @@
 </template>
 
 <script>
-// import { mutations } from '../store/dataset'
-
 import { mapActions, mapGetters } from 'vuex'
-import { Collection } from '../services/api'
-import { createPathByRole } from '../store/session'
+import { required, email } from 'vuelidate/lib/validators'
+import { validationMixin } from 'vuelidate'
 
 export default {
+  mixins: [validationMixin],
+  validations: {
+    email: { required, email },
+  },
   data: () => ({
     email: '',
-    password: ''
+    password: '',
+    hasError: false
   }),
   computed: {
-    ...mapGetters('session', ['logged', 'localUser', 'path']),
-  },
-  mounted () {
-    this.listenCol(Collection.User)
-  },
-  destroyed () {
-    this.unlistenCol(Collection.User)
+    ...mapGetters('session', ['path']),
+    emailErrors () {
+      const errors = []
+      if (!this.$v.email.$dirty) return errors
+      !this.$v.email.email && errors.push('Direccion de correo electronico invalida')
+      !this.$v.email.required && errors.push('Direccion de correo electrónico reuerido')
+      return errors
+    },
   },
   methods: {
-    ...mapActions('session', ['login', 'setRole', 'setPath']),
-    ...mapActions('dataset', ['listenCol', 'unlistenCol']),
+    ...mapActions('session', ['login']),
     async submit () {
-      await this.login({ email: this.email, password: this.password })
-      this.$router.replace(this.path)
+      try {
+        await this.login({ email: this.email, password: this.password })
+        await this.$router.replace(this.path)
+      } catch (e) {
+        this.hasError = true
+        this.email = ''
+        this.password = ''
+      }
     }
   }
 }

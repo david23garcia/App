@@ -34,7 +34,7 @@
                      exact
         >
           <v-list-item-action>
-            <v-icon>mdi-playstation</v-icon>
+            <v-icon>mdi-tag</v-icon>
           </v-list-item-action>
           <v-list-item-content>
             <v-list-item-title>Artículos</v-list-item-title>
@@ -49,10 +49,11 @@
             <v-icon>mdi-account</v-icon>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title>Empleados</v-list-item-title>
+<!--            <v-list-item-title v-if="adminIsLogin">Empleados</v-list-item-title>-->
+            <v-list-item-title>Usuarios</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item v-if="adminIsLogin || userIsLogin"
+        <v-list-item v-if="adminIsLogin || userIsLogin || superadminIsLogin"
                      :to="'/orders'"
                      router
                      exact
@@ -113,22 +114,32 @@
             <v-list-item-title>Perfil Comercio</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
-        <v-list-item v-if="userIsLogin || !logged"
-                     :to="'/register'"
+        <v-list-item v-if="!logged"
+                     :to="'/users/register'"
                      router
                      exact
         >
           <v-list-item-action>
-            <v-icon v-if="!logged">mdi-account-plus</v-icon>
-            <v-icon v-else>mdi-store</v-icon>
+            <v-icon>mdi-account-plus</v-icon>
           </v-list-item-action>
           <v-list-item-content>
-            <v-list-item-title v-if="!logged">Registrarse</v-list-item-title>
-            <v-list-item-title v-else>Registrar Comercio</v-list-item-title>
+            <v-list-item-title>Registrarse</v-list-item-title>
+          </v-list-item-content>
+        </v-list-item>
+        <v-list-item v-if="userIsLogin"
+                     :to="'/shops/register'"
+                     router
+                     exact
+        >
+          <v-list-item-action>
+            <v-icon>mdi-store</v-icon>
+          </v-list-item-action>
+          <v-list-item-content>
+            <v-list-item-title>Registrar Comercio</v-list-item-title>
           </v-list-item-content>
         </v-list-item>
         <v-list-item
-          to="/admin"
+          to="/help"
           router
           exact
         >
@@ -231,7 +242,6 @@ export default {
   mounted() {
     this.listenCol(Collection.User)
     this.listenCol(Collection.Shop)
-    this.initAuth()
   },
   destroyed() {
     this.unlistenCol(Collection.User)
@@ -239,7 +249,7 @@ export default {
   },
   methods: {
     ...mapActions('dataset', ['listenCol', 'unlistenCol']),
-    ...mapActions('session', ['logout', 'initAuth']),
+    ...mapActions('session', ['logout']),
     exit(){
       this.logout()
       this.$router.replace('/')

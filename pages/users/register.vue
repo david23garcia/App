@@ -1,31 +1,36 @@
 <template>
-  <user-list v-if="superadminIsLogin"></user-list>
+  <v-card v-if="superadminIsLogin || !logged">
+    <v-card-title>Nuevo Usuario</v-card-title>
+    <v-container>
+      <user-form></user-form>
+    </v-container>
+  </v-card>
   <failed-view v-else></failed-view>
 </template>
 
 <script>
   import { mapActions, mapGetters } from 'vuex'
-import UserList from '../../components/user/userList'
+import UserForm from '../../components/user/userForm'
 import FailedView from '../../components/failedView'
 import { Collection } from '../../services/api'
 
 export default {
-  components: { FailedView, UserList },
+  name: "register",
+  components: { FailedView, UserForm },
+
   computed: {
-    ...mapGetters('session', ['superadminIsLogin', 'localUser', 'uid'])
+    ...mapGetters('dataset', ['getListCol']),
+    ...mapGetters('session', ['logged', 'superadminIsLogin'])
   },
   mounted() {
     this.listenCol(Collection.User)
-    this.initAuth()
   },
   destroyed() {
     this.unlistenCol(Collection.User)
   },
   methods: {
     ...mapActions('dataset', ['listenCol', 'unlistenCol']),
-    ...mapActions('session', ['initAuth']),
   }
-
 }
 </script>
 

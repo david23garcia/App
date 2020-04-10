@@ -45,6 +45,14 @@ export default {
   modules: [
     '@nuxtjs/pwa'
   ],
+
+  pwa: {
+    manifest: {
+      name: 'comercio local',
+      lang: 'es'
+    }
+  },
+
   /*
   ** vuetify module configuration
   ** https://github.com/nuxt-community/vuetify-module

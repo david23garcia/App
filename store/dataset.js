@@ -1,5 +1,5 @@
 import Vue from 'vue'
-import { addDocument, addDocumentById, Collection, updateDocument } from '../services/api'
+import { addDocument, addDocumentById, Collection, pay, updateDocument } from '../services/api'
 import {
   syncJsonCol,
   listenCollection,
@@ -273,7 +273,6 @@ export const getters = {
   }
 
 }
-
 export const mutations = {
   addColListening (state, key) {
     state.listening.col[key] = state.listening.col[key] + 1
@@ -372,5 +371,86 @@ export const actions = {
   },
   updateModel ({ state, dispatch, commit }, { collection, data, id }) {
     return updateDocument(collection, id, data)
-  }
+  },
+
+  async buy({ dispatch, rootGetters, getters }){
+    const uid = rootGetters['session/uid']
+    const user = getters.getUser(uid)
+    const basket = user.basket
+    const date = new Date().getTime()
+
+
+    await dispatch('updateModel', { collection: Collection.User, data: { basket: [] }, id: uid })
+
+    await Promise.all(createOrders(getters, uid, basket, date).map(async (order) => {
+      const orderId = btoa(date.toString().concat(order.totalPrice.toString()))
+      await dispatch('createModel', { collection: Collection.Order, data: order, id: orderId })
+      const data = await pay(orderId, order.totalPrice)
+      await dispatch('updateModel', {
+        collection: Collection.Order,
+        data: { status: data.status ? "PAY" : "ERROR", payId: data.id },
+        id: orderId
+      })
+      if (data.status) {
+        await Promise.all(order.items.map(async (item) => {
+          await updateQuantityArticle(dispatch, getters, item)
+        }))
+      }
+    }))
+  },
 }
+
+function createOrders (getters, uid, basket, date) {
+  const orders = []
+  basket.map((item)=> {
+    let isItemInOrder = false
+    const article = getters.getArticle(item.articleId)
+    const shopId = article.shopId
+    if(orders.length === 0) initOrder(item, uid, shopId, article.price, orders, date)
+    else {
+      orders.map((order)=>{
+        if(order.shopId === shopId){
+          addItemToOrder(item, order, article.price)
+          isItemInOrder = true
+        }
+      })
+      if(!isItemInOrder) initOrder(item, uid, shopId, article.price, orders, date)
+    }
+  })
+  return orders
+}
+
+function initOrder (item, uid, shop, price, orders, dateCreation) {
+  const priceOrder = item.quantity*price
+  orders.push({
+      userId: uid,
+      shopId: shop,
+      items: [item],
+      status: "PENDING",
+      shippingMethod: null,
+      totalPrice: priceOrder,
+      address: null,
+      payId: "",
+      date: dateCreation
+    }
+  )
+}
+
+function addItemToOrder(item, order, price){
+  order.items.push(item)
+  order.totalPrice = order.totalPrice + item.quantity*price
+}
+
+async function updateQuantityArticle(dispatch, getters, item){
+  const article = getters.getArticle(item.articleId)
+  await dispatch('updateModel', {
+    collection: Collection.Article, data: {
+      quantity: article.quantity - item.quantity
+    }, id: item.articleId
+  })
+}
+
+
+
+
+

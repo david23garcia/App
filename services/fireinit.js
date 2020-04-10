@@ -88,23 +88,23 @@ export const getDB = async () => {
 // All functions
 const endPoint = {
   // Functions
-  functions: null,
-  updateAuth: null,
-  checkEmail: null,
-  addUser: null,
+  pay: null,
+  disableUser: null,
+  createUser: null,
   _functionsPromise: null,
+  functions: null,
 
   _initFunctions () {
-    this.updateAuth = this.functions.httpsCallable('updateAuth')
-    this.checkEmail = this.functions.httpsCallable('checkEmail')
-    this.addUser = this.functions.httpsCallable('addUser')
+    this.pay = this.functions.httpsCallable('pay')
+    this.disableUser = this.functions.httpsCallable('disabledUser')
+    this.createUser = this.functions.httpsCallable('createUser')
   },
   async _functionsInit () {
     if (fb === null) {
       await getFirebase()
     }
     await import('firebase/functions')
-    this.functions = fb.app().functions('europe-west1')
+    this.functions = fb.app().functions('us-central1')
     this._initFunctions()
     return this.functions
   },
@@ -148,21 +148,3 @@ export const getCurrentUser = async () => {
   return result
 }
 
-export const onAuthStateChanged = async () => {
-  const auth = await  getAuth()
-  auth.onAuthStateChanged(user => {
-    return user
-  })
-}
-
-export const signOut = async () => {
-  const auth = await getAuth()
-  return auth.signOut()
-}
-
-export const signInWithEmailAndPassword = async (email, password) => {
-  const auth = await getAuth()
-  return auth.signInWithEmailAndPassword(email, password).then((user) => {
-    return user.user
-  })
-}

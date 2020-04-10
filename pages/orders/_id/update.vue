@@ -1,5 +1,5 @@
 <template>
-    $END$
+  <v-card></v-card>
 </template>
 
 <script>

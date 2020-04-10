@@ -5,7 +5,7 @@
         <v-text-field
           v-model="name"
           :error-messages="nameErrors"
-          :counter="20"
+          :counter="50"
           label="Nombre"
           required
           @input="$v.name.$touch()"
@@ -26,7 +26,7 @@
         <v-text-field
           v-model="barcode"
           :error-messages="barcodeErrors"
-          :counter="250"
+          :counter="13"
           label="Código de Barras"
           required
           @input="$v.barcode.$touch()"
@@ -73,18 +73,18 @@
 import { validationMixin } from 'vuelidate'
 import { required, maxLength, minValue, minLength } from 'vuelidate/lib/validators'
 import { mapActions, mapGetters } from 'vuex'
-import { Collection } from '../services/api'
+import { Collection } from '../../services/api'
 
 export default {
   mixins: [validationMixin],
 
   validations: {
-    name: { required, maxLength: maxLength(20) },
+    name: { required, maxLength: maxLength(50) },
     description: { required, maxLength: maxLength(250) },
     price: { required, minValue: minValue(0.01) },
     quantity: { required, minValue: minValue(1) },
     discount: { minValue: minValue(5) },
-    barcode: { required, minLength: minLength(18), maxLength: maxLength(18) },
+    barcode: { required, minLength: minLength(13), maxLength: maxLength(13) },
   },
 
   data: () => ({
@@ -103,7 +103,7 @@ export default {
     nameErrors () {
       const errors = []
       if (!this.$v.name.$dirty) return errors
-      !this.$v.name.maxLength && errors.push('El nombre debe tener 20 caracteres como máximo')
+      !this.$v.name.maxLength && errors.push('El nombre debe tener 50 caracteres como máximo')
       !this.$v.name.required && errors.push('Nombre requerido.')
       return errors
     },
@@ -117,8 +117,8 @@ export default {
     barcodeErrors () {
       const errors = []
       if (!this.$v.barcode.$dirty) return errors
-      !this.$v.barcode.maxLength && errors.push('El codigo de barras debe tener 18 caracteres')
-      !this.$v.barcode.minLength && errors.push('El codigo de barras debe tener 18 caracteres')
+      !this.$v.barcode.maxLength && errors.push('El codigo de barras debe tener 13 caracteres')
+      !this.$v.barcode.minLength && errors.push('El codigo de barras debe tener 13 caracteres')
       !this.$v.barcode.required && errors.push('Codigo de Barras necesario.')
       return errors
     },
@@ -163,16 +163,18 @@ export default {
         this.exit()
       } catch (e) {
         this.hasError = true
+        this.clear()
       }
     },
     getNewArticle(id){
       return {
         name: this.name,
         description: this.description,
-        quantity: this.quantity,
-        price: this.price,
+        quantity: parseFloat(this.quantity),
+        price: parseFloat(this.price),
         shopId: id,
-        discount: this.discount,
+        discount: parseInt(this.discount),
+        barcode: this.barcode,
         isBlocked: false,
         isRemoved: false
       }

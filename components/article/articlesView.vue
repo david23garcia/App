@@ -16,7 +16,7 @@
 
 <script>
 import { mapActions, mapGetters } from 'vuex'
-import { Collection } from '../services/api'
+import { Collection } from '../../services/api'
 import ArticleCard from './articleCard'
 
 export default {

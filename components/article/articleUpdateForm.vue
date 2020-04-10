@@ -41,7 +41,7 @@
   import { validationMixin } from 'vuelidate'
   import { minValue } from 'vuelidate/lib/validators'
   import { mapActions, mapGetters } from 'vuex'
-  import { Collection } from '../services/api'
+  import { Collection } from '../../services/api'
 
   export default {
     mixins: [validationMixin],
@@ -93,20 +93,18 @@
       ...mapActions('dataset', ['updateModel', 'listenCol', 'unlistenCol']),
       async submit () {
         try {
-          const shop = this.getShopByUser()
-          const shopId = shop.id
-          const article = this.getNewArticle(shopId)
+          const article = this.getUpdateArticle()
           await this.updateModel({ collection: Collection.Article, data: article, id: this.$route.params.id })
           this.exit()
         } catch (e) {
           this.hasError = true
         }
       },
-      getUpdateArticle(id){
+      getUpdateArticle(){
         return {
-          quantity: this.quantity,
-          price: this.price,
-          shopId: id
+          quantity: parseFloat(this.quantity),
+          price: parseFloat(this.price),
+          discount: parseFloat(this.discount),
         }
       },
       getShopByUser(){
@@ -116,12 +114,9 @@
       },
       clear () {
         this.$v.$reset()
-        this.name =  ''
-        this.description =  ''
         this.price =  null
         this.quantity = null
         this.discount =  null
-        this.barcode =  ''
       },
       exit () {
         this.$router.replace('/articles')

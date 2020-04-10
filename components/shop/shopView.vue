@@ -34,9 +34,11 @@ export default {
   },
   mounted() {
     this.listenCol(Collection.Shop)
+    this.listenCol(Collection.Article)
   },
   destroyed() {
     this.unlistenCol(Collection.Shop)
+    this.unlistenCol(Collection.Article)
   },
   methods: {
     ...mapActions('dataset', ['listenCol', 'unlistenCol']),

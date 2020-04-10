@@ -67,7 +67,7 @@ export default {
       }
     },
     moreInfo(){
-      this.$router.replace('articles/'+this.id)
+      this.$router.replace("/articles/"+this.id)
     }
   }
 }

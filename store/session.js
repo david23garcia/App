@@ -86,12 +86,12 @@ export const actions = {
       await commit('setUser', user)   // cuidado con ese user, debe tener la estructura que tenemos si no, mal vamos
     }
   },
-  async logout({ commit }) {
+  async logout({ commit, getters }) {
     const auth = await getAuth()
     await auth.signOut()
     await commit('setUser', null)
   },
-  async login( { commit }, credentials){
+  async login( { commit, getters }, credentials){
     const auth = await getAuth()
     const user = await auth.signInWithEmailAndPassword(credentials.email, credentials.password)
     await commit('setUser', user.user)
@@ -101,14 +101,17 @@ export const actions = {
     return auth.sendPasswordResetEmail(email)
   },
   async registerUser({ commit, dispatch, getters }, user, isSuperadmin) {
-    let userAuth
-    if(isSuperadmin) userAuth = await registerUserByBackend(user.email, user.password)
-    else userAuth = await registerUser(user.email, user.password)
-    await addDocumentById(Collection.User, userAuth.user.uid, user)
-    if(!isSuperadmin) {
-      await dispatch('logout')
-      await dispatch('login',{ email: user.email, password: user.password })
+    if(isSuperadmin){
+      const userAuth = await registerUserByBackend(user.email, user.password)
+      await addDocumentById(Collection.User, userAuth.user.uid, user)
     }
+    else {
+      const userAuth = await registerUser(user.email, user.password)
+      await dispatch('logout')
+      await addDocumentById(Collection.User, userAuth.user.uid, user)
+      await dispatch('login', {email: user.email, password: user.password})
+    }
+
   },
   async disableUser({state}, user, isRemoved){
     try {

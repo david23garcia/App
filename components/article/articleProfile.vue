@@ -20,7 +20,7 @@
               :items="items"
               readonly
             ></v-select></v-col>
-            <v-col><v-btn :disabled="quantity<1" @click="submit()">Comprar</v-btn></v-col>
+            <v-col><v-btn :disabled="quantity<1 || !logged" @click="submit()">Comprar</v-btn></v-col>
           </v-card-title>
         </v-row>
       </v-col>
@@ -29,52 +29,51 @@
 </template>
 
 <script>
-  import { mapActions, mapGetters } from 'vuex'
-  import { Collection } from '../../services/api'
+import { mapActions, mapGetters } from 'vuex'
+import { Collection } from '../../services/api'
 
-  export default {
-    name: "articleView",
-    data () {
-      return {
-        quantity: 0,
-        items: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
+export default {
+  name: "articleView",
+  data () {
+    return {
+      quantity: 0,
+      items: ['1', '2', '3', '4', '5', '6', '7', '8', '9', '10']
+    }
+  },
+  computed: {
+    ...mapGetters('dataset', ['getArticle']),
+    ...mapGetters('session', ['localUser', 'logged']),
+  },
+  mounted() {
+    this.listenCol(Collection.Article)
+  },
+  destroyed() {
+    this.unlistenCol(Collection.Article)
+  },
+  methods: {
+    ...mapActions('dataset', ['listenCol', 'unlistenCol', 'updateModel']),
+    submit(){
+      const user = this.localUser()
+      if (!this.isRepeat(user.basket)) {
+        this.updateModel({
+          collection: Collection.User, data: {
+            basket: [{
+              quantity: this.quantity,
+              articleId: this.id,
+            }, ...user.basket]
+          }, id: this.uid
+        })
       }
     },
-    computed: {
-      ...mapGetters('dataset', ['getArticle']),
-      ...mapGetters('session', ['localUser']),
-    },
-    mounted() {
-      this.listenCol(Collection.Article)
-    },
-    destroyed() {
-      this.unlistenCol(Collection.Article)
-    },
-    methods: {
-      ...mapActions('dataset', ['listenCol', 'unlistenCol', 'updateModel']),
-      submit(){
-        const user = this.localUser()
-        if (!this.isRepeat(user.basket)) {
-          this.updateModel({
-            collection: Collection.User, data: {
-              basket: [{
-                quantity: this.quantity,
-                articleId: this.id,
-              }, ...user.basket]
-            }, id: this.uid
-          })
-        }
-      },
-      isRepeat(basket){
-        for (const item of basket) {
-          if (item.articleId === this.id) {
-            return true
-          }
+    isRepeat(basket){
+      for (const item of basket) {
+        if (item.articleId === this.id) {
+          return true
         }
       }
     }
-
   }
+}
 </script>
 
 <style scoped>

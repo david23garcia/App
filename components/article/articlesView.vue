@@ -49,11 +49,11 @@ export default {
     items() {
       return this.getListCol(Collection.Article).filter((item) => {
         if(typeof this.id === 'undefined'){
-          return this.search === '' ? !item.isRemoved : !item.isRemoved && (item.title.toLowerCase().includes(this.search.toLowerCase())
+          return this.search === '' ? !item.isRemoved : !item.isRemoved && (item.name.toLowerCase().includes(this.search.toLowerCase())
             ||item.description.toLowerCase().includes(this.search.toLowerCase()))
         } else {
           return this.search === '' ? !item.isRemoved && this.id === item.shopId : !item.isRemoved && this.id === item.shopId
-            && (item.title.toLowerCase().includes(this.search.toLowerCase()) ||item.description.toLowerCase().includes(this.search.toLowerCase()))
+            && (item.name.toLowerCase().includes(this.search.toLowerCase()) ||item.description.toLowerCase().includes(this.search.toLowerCase()))
         }
       })
     }

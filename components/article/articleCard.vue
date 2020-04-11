@@ -36,7 +36,7 @@ export default {
   }),
   computed: {
     ...mapGetters('dataset', ['getArticle']),
-    ...mapGetters('session', ['localUser', 'logged'])
+    ...mapGetters('session', ['localUser', 'logged', 'uid'])
   },
   mounted() {
     this.listenCol(Collection.Article)
@@ -47,7 +47,8 @@ export default {
   methods: {
     ...mapActions('dataset', ['listenCol', 'unlistenCol', 'updateModel']),
     addToBasket(){
-      const user = this.localUser()
+      const user = this.localUser
+      console.log(user)
       if (!this.isRepeat()) {
         this.updateModel({
           collection: Collection.User, data: {
@@ -60,6 +61,7 @@ export default {
       }
     },
     isRepeat(basket){
+      if(typeof basket === 'undefined') return false
       for (const item of basket) {
         if (item.articleId === this.id) {
           return true

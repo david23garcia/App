@@ -178,9 +178,10 @@
       ...mapActions('session', ['registerUser']),
       async submit () {
         try{
-          await this.registerUser(this.getUser('user'), this.superadminIsLogin())
+          await this.registerUser(this.getUser('user'), this.superadminIsLogin)
           await this.exit()
         } catch (e) {
+          console.log(e.message)
           this.hasError = true
           this.clear()
         }

@@ -96,7 +96,7 @@
       ...mapActions('session', ['ressetPassword']),
       items(){
         return this.getListCol(Collection.User).filter((item) => {
-          return !item.isRemoved || item.role !== Rol.Superadmin
+          return !(item.isRemoved || item.role === Rol.Superadmin)
         })
       },
       register(){

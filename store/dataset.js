@@ -379,7 +379,6 @@ export const actions = {
     const basket = user.basket
     const date = new Date().getTime()
 
-
     await dispatch('updateModel', { collection: Collection.User, data: { basket: [] }, id: uid })
 
     await Promise.all(createOrders(getters, uid, basket, date).map(async (order) => {
@@ -391,9 +390,17 @@ export const actions = {
         data: { status: data.status ? "PAY" : "ERROR", payId: data.id },
         id: orderId
       })
+      console.log(data)
       if (data.status) {
         await Promise.all(order.items.map(async (item) => {
-          await updateQuantityArticle(dispatch, getters, item)
+          const article = getters.getArticle(item.articleId)
+          console.log(article)
+          console.log(item)
+          await dispatch('updateModel', {
+            collection: Collection.Article,
+            data: { quantity:  article.quantity - item.quantity },
+            id: item.articleId
+          })
         }))
       }
     }))
@@ -439,15 +446,6 @@ function initOrder (item, uid, shop, price, orders, dateCreation) {
 function addItemToOrder(item, order, price){
   order.items.push(item)
   order.totalPrice = order.totalPrice + item.quantity*price
-}
-
-async function updateQuantityArticle(dispatch, getters, item){
-  const article = getters.getArticle(item.articleId)
-  await dispatch('updateModel', {
-    collection: Collection.Article, data: {
-      quantity: article.quantity - item.quantity
-    }, id: item.articleId
-  })
 }
 
 

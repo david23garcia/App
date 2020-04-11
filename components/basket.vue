@@ -1,32 +1,41 @@
 <template>
-  <v-card>
-    <v-data-table v-if="items().length !== 0"
-      :headers="headers"
-      :items="items()"
-      hide-default-footer
-      class="elevation-1"
-    >
-      <template v-slot:item.action="{ item }">
-        <v-icon
-          class="mr-2"
-          @click="plusQuantity(item.articleId)"
-        >
-          mdi-plus
-        </v-icon>
-        <v-icon
-          @click="minusQuantity(item.articleId)"
-        >
-          mdi-minus
-        </v-icon>
-        <v-icon
-          @click="deleteArticle(item.articleId)"
-        >
-          mdi-delete
-        </v-icon>
-      </template>
-    </v-data-table>
-    <v-card-title v-if="items().length !== 0">Precio Total: {{ totalPrice }}</v-card-title>
-      <v-btn v-if="items().length !== 0" text icon @click="this.buy"><v-icon>mdi-credit-card</v-icon>Pagar</v-btn>
+  <v-card v-if="items().length !== 0">
+    <v-container>
+      <v-data-table v-if="items().length !== 0"
+                    :headers="headers"
+                    :items="items()"
+                    hide-default-footer
+                    class="elevation-1"
+      >
+        <template v-slot:item.action="{ item }">
+          <v-icon
+            class="mr-2"
+            @click="plusQuantity(item.articleId)"
+          >
+            mdi-plus
+          </v-icon>
+          <v-icon
+            @click="minusQuantity(item.articleId)"
+          >
+            mdi-minus
+          </v-icon>
+          <v-icon
+            @click="deleteArticle(item.articleId)"
+          >
+            mdi-delete
+          </v-icon>
+        </template>
+      </v-data-table>
+    </v-container>
+    <v-container >
+      <v-card-text>
+        Precio Total: {{ totalPrice }}
+        <v-btn text icon @click="this.buy"><v-icon>mdi-credit-card</v-icon>Pagar</v-btn>
+      </v-card-text>
+    </v-container>
+  </v-card>
+  <v-card v-else>
+    <v-card-title>No Existen Productos en el Carrito</v-card-title>
   </v-card>
 </template>
 
@@ -39,7 +48,7 @@ export default {
   data: () => ({
     headers: [
       { text: 'Cantidad', value: 'quantity' },
-      { text: 'Nombre Artículo', value: 'title' },
+      { text: 'Nombre Artículo', value: 'name' },
       { text: 'Precio', value: 'price' },
       { text: 'Acciones', value: 'action', sortable: false },
     ],
@@ -68,7 +77,7 @@ export default {
       const items =  this.getUser(this.uid).basket.map((item) => {
         const article = this.getArticle(item.articleId)
         totalPrice = totalPrice + item.quantity*article.price
-        return  {quantity: item.quantity, title: article.title, price: (item.quantity*article.price).toFixed(2) +' €', articleId: item.articleId}
+        return  {quantity: item.quantity, name: article.name, price: (item.quantity*article.price).toFixed(2) +' €', articleId: item.articleId}
       })
       this.totalPrice = totalPrice.toFixed(2)
       return items

@@ -66,6 +66,7 @@ export default {
       }
     },
     isRepeat(basket){
+      if(typeof basket === 'undefined') return false
       for (const item of basket) {
         if (item.articleId === this.id) {
           return true

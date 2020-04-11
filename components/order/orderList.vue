@@ -72,7 +72,7 @@ export default {
         } else {
           return true
         }
-      }).map((order) => ({shop: this.getShop(order.shopId).name, user: this.getUser(order.userId), products: order.items.length, ...order}))
+      }).map((order) => ({shop: this.getShop(order.shopId).name, user: this.getUser(order.userId).email, ...order}))
     },
     headers(){
       if(this.superadminIsLogin){
@@ -82,7 +82,6 @@ export default {
           { text: 'Comercio', value: 'shop' },
           { text: 'Estado', value: 'status' },
           { text: 'Id Pago', value: 'payId' },
-          { text: 'Nº Productos', value: 'products' },
           { text: 'Precio', value: 'totalPrice' }
         ]
       }  else if(this.adminIsLogin) {
@@ -91,7 +90,6 @@ export default {
           { text: 'Usuario', value: 'user' },
           { text: 'Estado', value: 'status' },
           { text: 'Id Pago', value: 'payId' },
-          { text: 'Nº Productos', value: 'products' },
           { text: 'Precio', value: 'totalPrice' },
         ]
       } else {
@@ -100,7 +98,6 @@ export default {
           { text: 'Comercio', value: 'shop' },
           { text: 'Estado', value: 'status' },
           { text: 'Id Pago', value: 'payId' },
-          { text: 'Nº Productos', value: 'products' },
           { text: 'Precio', value: 'totalPrice' }
         ]
       }

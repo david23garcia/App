@@ -214,7 +214,7 @@ export default {
     },
     exit () {
       if(this.superadminIsLogin) this.$router.replace('/shops')
-      else this.$router.replace('/articles')
+      else this.$router.replace('/')
     }
   }
 }
